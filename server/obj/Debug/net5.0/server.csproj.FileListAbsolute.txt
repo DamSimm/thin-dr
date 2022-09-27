@@ -1,0 +1,16 @@
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\obj\Debug\net5.0\server.csprojAssemblyReference.cache
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\obj\Debug\net5.0\server.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\obj\Debug\net5.0\server.AssemblyInfoInputs.cache
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\obj\Debug\net5.0\server.AssemblyInfo.cs
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\obj\Debug\net5.0\server.csproj.CoreCompileInputs.cache
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\bin\Debug\net5.0\server.exe
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\bin\Debug\net5.0\server.deps.json
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\bin\Debug\net5.0\server.runtimeconfig.json
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\bin\Debug\net5.0\server.runtimeconfig.dev.json
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\bin\Debug\net5.0\server.dll
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\bin\Debug\net5.0\ref\server.dll
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\bin\Debug\net5.0\server.pdb
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\obj\Debug\net5.0\server.dll
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\obj\Debug\net5.0\ref\server.dll
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\obj\Debug\net5.0\server.pdb
+C:\Users\SamThinkpad\school\FourthYear\sec440\thinxdr\thin-dr\server\obj\Debug\net5.0\server.genruntimeconfig.cache
