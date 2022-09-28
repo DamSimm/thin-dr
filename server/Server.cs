@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Net.Http;
+using System.Net;
 using System.IO;
 
 namespace server
@@ -26,7 +26,7 @@ namespace server
 
         public void startServer(){
             //start our server on the specified IP and port
-            string url = $"http://{Ipaddress}:{Port}";
+            string url = $"http://{Ipaddress}:{Port}/";
             _listener.Prefixes.Add(url);
             _listener.Start();
             //check if our server is listening
@@ -45,8 +45,8 @@ namespace server
         //per https://zetcode.com/csharp/httplistener/ 
         public void registerAgent(){
             //accept POST requests to register an agent
-            HttpListenerContext ctx = _listener.GetContext();
-            using HttpListenerResponse resp = ctx.Response();
+            //HttpListenerContext ctx = _listener.GetContext();
+            //using HttpListenerResponse resp = ctx.Response();
         }
 
         public Listener(string name, int port, string ipaddress){
@@ -71,8 +71,9 @@ namespace server
 
     public class Server{
         static void Main(string[] args){
-            Listener test = new Listener("test", 61, "192.168.1.1");
+            Listener test = new Listener("test", 61, "127.0.0.1");
             test.startServer();
+            
         }
     }
 }
