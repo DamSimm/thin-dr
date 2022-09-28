@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace server
@@ -83,10 +84,16 @@ namespace server
                 //Get our context asynchronously
                 HttpListenerContext context = await _listener.GetContextAsync();
                 HttpListenerRequest request = context.Request;
-                // Obtain a response object.
-                HttpListenerResponse response = context.Response;
+
+                //read client data
+                Stream body = request.InputStream;
+                System.Text.Encoding encoding = request.ContentEncoding;
+                StreamReader reader = new System.IO.StreamReader(body, encoding);
+                Console.WriteLine(reader.ReadToEnd());
 
                 // Construct a response.
+                // Obtain a response object.
+                HttpListenerResponse response = context.Response;
                 string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
 
@@ -102,29 +109,11 @@ namespace server
             }
         }
 
-        public void AsyncRespond(){
-            //per https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistener?view=net-6.0
-            //loop 5 times
-            while(true){
-                /*
-                IAsyncResult result = _listener.BeginGetContext(new AsyncCallback(Listen),_listener);
-                // Applications can do some work here while waiting for the
-                // request. If no work can be done until you have processed a request,
-                // use a wait handle to prevent this thread from terminating
-                // while the asynchronous operation completes.
-                result.StartAsync();
-                Console.WriteLine("Waiting for request to be processed asyncronously.");
-                //Console.WriteLine("Request processed asyncronously.");
-                */
-            }
-        }
-
         //per https://zetcode.com/csharp/httplistener/ 
         public void RegisterAgent(){
             //accept POST requests to register an agent
             //HttpListenerContext ctx = _listener.GetContext();
             //using HttpListenerResponse resp = ctx.Response();
         }
-
     }
 }

@@ -16,7 +16,8 @@ namespace client
         static async Task Main(string[] args)
         {
             
-            Communicator comm = new Communicator("google.com", 443);
+            //takes command line args of IP and Port
+            Communicator comm = new Communicator(args[0], Int32.Parse(args[1]));
             //await Communicator.GetRequest(comm.host);
             await comm.RegisterAgent();
 
@@ -44,7 +45,7 @@ namespace client
             this.port = port;
 
             // build uri
-            Uri uri = new Uri($"https://{this.host}:{this.port}");
+            Uri uri = new Uri($"http://{this.host}:{this.port}");
             this.uri = uri;
         }
 
