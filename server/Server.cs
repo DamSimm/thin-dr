@@ -4,6 +4,16 @@ using System.IO;
 
 namespace server
 {
+    public class Server{
+        static void Main(string[] args){
+            //take command line arguments of Name, Port, IPaddress
+            Listener test = new Listener(args[0], Int32.Parse(args[1]), args[2]);
+            test.StartServer();
+            test.AsyncRespond();
+            test.Terminate();
+        }
+    }
+
     //we probably dont need this interface
     public interface IListen{
         string Name {get; set;}
@@ -25,6 +35,7 @@ namespace server
         private HttpListener _listener;
 
         public Listener(string name, int port, string ipaddress){
+            Console.WriteLine("Constructing {0}",name);
             this.Name = name;
             this.Port = port;
             this.Ipaddress = ipaddress;
@@ -32,12 +43,12 @@ namespace server
             this.keyPath = $"{this.path}key";
             this.filePath = $"{this.path}files/";
             this.agentsPath = $"{this.path}agents/";
-            //will need to generate a key in this location
-            File.Create(this.keyPath);
             //Create the paths defined above if they don't already exist
             Directory.CreateDirectory(this.path);
             Directory.CreateDirectory(this.filePath);
             Directory.CreateDirectory(this.agentsPath);
+            //will need to generate a key in this location
+            File.Create(this.keyPath);
 
             //this.key = generateKey();
             _listener = new HttpListener();
@@ -102,14 +113,5 @@ namespace server
             //using HttpListenerResponse resp = ctx.Response();
         }
 
-    }
-
-    public class Server{
-        static void Main(string[] args){
-            Listener test = new Listener("test", 61, "127.0.0.1");
-            test.StartServer();
-            test.AsyncRespond();
-            test.Terminate();
-        }
     }
 }
