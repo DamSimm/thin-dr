@@ -24,6 +24,25 @@ namespace server
         public string key {get; set;}
         private HttpListener _listener;
 
+        public Listener(string name, int port, string ipaddress){
+            this.Name = name;
+            this.Port = port;
+            this.Ipaddress = ipaddress;
+            this.path = $"data/listeners/{this.Name}/";
+            this.keyPath = $"{this.path}key";
+            this.filePath = $"{this.path}files/";
+            this.agentsPath = $"{this.path}agents/";
+            //will need to generate a key in this location
+            File.Create(this.keyPath);
+            //Create the paths defined above if they don't already exist
+            Directory.CreateDirectory(this.path);
+            Directory.CreateDirectory(this.filePath);
+            Directory.CreateDirectory(this.agentsPath);
+
+            //this.key = generateKey();
+            _listener = new HttpListener();
+        }
+
         public void startServer(){
             //start our server on the specified IP and port
             string url = $"http://{Ipaddress}:{Port}/";
@@ -49,31 +68,14 @@ namespace server
             //using HttpListenerResponse resp = ctx.Response();
         }
 
-        public Listener(string name, int port, string ipaddress){
-            this.Name = name;
-            this.Port = port;
-            this.Ipaddress = ipaddress;
-            this.path = $"data/listeners/{this.Name}/";
-            this.keyPath = $"{this.path}key";
-            this.filePath = $"{this.path}files/";
-            this.agentsPath = $"{this.path}agents/";
-            //will need to generate a key in this location
-            File.Create(this.keyPath);
-            //Create the paths defined above if they don't already exist
-            Directory.CreateDirectory(this.path);
-            Directory.CreateDirectory(this.filePath);
-            Directory.CreateDirectory(this.agentsPath);
-
-            //this.key = generateKey();
-            _listener = new HttpListener();
-        }
     }
 
     public class Server{
         static void Main(string[] args){
             Listener test = new Listener("test", 61, "127.0.0.1");
             test.startServer();
-            
+            test.stop();
+
         }
     }
 }
