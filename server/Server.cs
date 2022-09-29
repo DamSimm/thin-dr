@@ -11,8 +11,12 @@ namespace server
             //take command line arguments of Name, Port, IPaddress
             Listener test = new Listener(args[0], Int32.Parse(args[1]), args[2]);
             test.StartServer();
-            var handle = test.Listen();
-            handle.Wait();
+            //start the async listener
+            test.Listen();
+            //test async
+            Console.WriteLine("Enter your favorite color");
+            string color = Console.ReadLine();
+            Console.WriteLine("Color: {0}",color);
             test.Terminate();
         }
     }
@@ -78,6 +82,7 @@ namespace server
         }
 
         public async Task Listen(){
+            //The main method of this class
             //per https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistener?view=net-6.0
             //and https://gist.github.com/define-private-public/d05bc52dd0bed1c4699d49e2737e80e7
             while(true){
@@ -92,7 +97,6 @@ namespace server
                 Console.WriteLine(reader.ReadToEnd());
 
                 // Construct a response.
-                // Obtain a response object.
                 HttpListenerResponse response = context.Response;
                 string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
@@ -103,10 +107,10 @@ namespace server
                 //write our response string to the client using the outputstream
                 System.IO.Stream output = response.OutputStream;
                 output.Write(buffer,0,buffer.Length);
-
-                // You must close the output stream.
-                output.Close();
             }
+            // You must close the output stream.
+            Console.WriteLine("Listener Closed");
+            //output.Close();
         }
 
         //per https://zetcode.com/csharp/httplistener/ 
