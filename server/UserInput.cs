@@ -24,6 +24,7 @@ namespace server{
                 string input = Console.ReadLine();
                 switch(input){
                     case "1":
+                        //exiting our loop here will terminate the server
                         menuLoop = false;
                         break;
                     default: 
@@ -32,7 +33,5 @@ namespace server{
                 }
             }
         }
-
-
     }
 }

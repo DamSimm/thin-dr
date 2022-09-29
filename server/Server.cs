@@ -101,11 +101,11 @@ namespace server
                 Stream body = request.InputStream;
                 System.Text.Encoding encoding = request.ContentEncoding;
                 StreamReader reader = new System.IO.StreamReader(body, encoding);
-                Console.WriteLine(reader.ReadToEnd());
+                string test = reader.ReadToEnd();
 
                 // Construct a response.
                 HttpListenerResponse response = context.Response;
-                string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
+                string responseString = RespondToClient(test);
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
 
                 // Get a response stream and write the response to it.
@@ -118,6 +118,12 @@ namespace server
             // You must close the output stream.
             //Console.WriteLine("Listener Closed");
             //output.Close();
+        }
+
+        public string RespondToClient(string text){
+            //will construct a response string to send to the client based on requests
+            Console.WriteLine(text);
+            return $"<HTML><BODY> Hello {text}</BODY></HTML>";
         }
 
         //per https://zetcode.com/csharp/httplistener/ 

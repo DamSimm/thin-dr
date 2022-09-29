@@ -3,6 +3,8 @@
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Runtime;
+using System.IO;
+using System.Text;
 
 // testing running cmd
 using System.Diagnostics;
@@ -73,6 +75,8 @@ namespace client
                 // send to server for registration
                 HttpResponseMessage response = await httpclient.PostAsync(this.uri, content);
                 response.EnsureSuccessStatusCode();
+
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
             }
             catch (HttpRequestException e)
             {
