@@ -2,6 +2,8 @@
 using System.Net;
 using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace server
@@ -101,11 +103,12 @@ namespace server
                 Stream body = request.InputStream;
                 System.Text.Encoding encoding = request.ContentEncoding;
                 StreamReader reader = new System.IO.StreamReader(body, encoding);
-                string test = reader.ReadToEnd();
+                JsonDocument test = JsonDocument.Parse(reader.ReadToEnd());
+                JsonElement root = test.RootElement;
 
                 // Construct a response.
                 HttpListenerResponse response = context.Response;
-                string responseString = RespondToClient(test);
+                string responseString = RespondToClient(root.GetProperty("hostname"));
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
 
                 // Get a response stream and write the response to it.
@@ -120,9 +123,10 @@ namespace server
             //output.Close();
         }
 
-        public string RespondToClient(string text){
+        public string RespondToClient(JsonElement text){
             //will construct a response string to send to the client based on requests
-            Console.WriteLine(text);
+            //string jsonDecode = JsonSerializer.Deserialize<string>(text);
+            //Console.WriteLine(jsonDecode);
             return $"<HTML><BODY> Hello {text}</BODY></HTML>";
             //if the request is looking for a new command
                 //check if there is a qued command for them
