@@ -11,6 +11,17 @@ namespace server{
             //returns a menu
             //should be made generic and with input
             //in the constructor
+            Console.WriteLine(@"
+_________         _________ _               ______   _______ 
+\__   __/|\     /|\__   __/( (    /|       (  __  \ (  ____ )
+   ) (   | )   ( |   ) (   |  \  ( |       | (  \  )| (    )|
+   | |   | (___) |   | |   |   \ | | _____ | |   ) || (____)|
+   | |   |  ___  |   | |   | (\ \) |(_____)| |   | ||     __)
+   | |   | (   ) |   | |   | | \   |       | |   ) || (\ (   
+   | |   | )   ( |___) (___| )  \  |       | (__/  )| ) \ \__
+   )_(   |/     \|\_______/|/    )_)       (______/ |/   \__/
+                                                             
+            ");
             return "C2 Server User Input\n\t[1] Exit the program";
         }
 

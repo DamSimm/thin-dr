@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.IO;
 using System.Text;
@@ -103,12 +104,11 @@ namespace server
                 Stream body = request.InputStream;
                 System.Text.Encoding encoding = request.ContentEncoding;
                 StreamReader reader = new System.IO.StreamReader(body, encoding);
-                JsonDocument test = JsonDocument.Parse(reader.ReadToEnd());
-                JsonElement root = test.RootElement;
+                JsonDocument clientData = JsonDocument.Parse(reader.ReadToEnd());
 
                 // Construct a response.
                 HttpListenerResponse response = context.Response;
-                string responseString = RespondToClient(root.GetProperty("hostname"));
+                string responseString = RespondToClient(clientData);
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
 
                 // Get a response stream and write the response to it.
@@ -123,12 +123,20 @@ namespace server
             //output.Close();
         }
 
-        public string RespondToClient(JsonElement text){
+        public string RespondToClient(JsonDocument clientData){
             //will construct a response string to send to the client based on requests
-            //string jsonDecode = JsonSerializer.Deserialize<string>(text);
-            //Console.WriteLine(jsonDecode);
-            return $"<HTML><BODY> Hello {text}</BODY></HTML>";
             //if the request is looking for a new command
+            JsonElement root = clientData.RootElement;
+            //attempt to register the client based off of request
+            Console.WriteLine(root);
+            try{
+                JsonElement register = root.GetProperty("register");
+                RegisterAgent(root.GetProperty("hostname"));
+                return $"<HTML><BODY> Hello {root.GetProperty("hostname")}</BODY></HTML>";
+            } catch (KeyNotFoundException) {
+                Console.WriteLine("no");
+                return "lol";
+            }
                 //check if there is a qued command for them
             //else if this is a new client
                 //RegisterAgent
@@ -137,11 +145,8 @@ namespace server
         }
 
         //per https://zetcode.com/csharp/httplistener/ 
-        public void RegisterAgent(){
-            //accept POST requests to register an agent
-            //HttpListenerContext ctx = _listener.GetContext();
-            //using HttpListenerResponse resp = ctx.Response();
-            //check the key that is given via POST
+        public void RegisterAgent(JsonElement hostname){
+            Console.WriteLine("Registering {0}",hostname);
             //if it is valid
                 //store the client's information in a file
             //if it isn't

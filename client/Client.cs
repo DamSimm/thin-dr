@@ -70,7 +70,8 @@ namespace client
                 // get machine hostname
                 string hostname = System.Environment.MachineName;
                 // build httpcontent body with hostname
-                HttpContent content = new StringContent($"{{\"hostname\": \"{hostname}\"}}");
+                string contentBody = $"{{\"hostname\": \"{hostname}\",\"register\": \"true\"}}";
+                HttpContent content = new StringContent(contentBody);
 
                 // send to server for registration
                 HttpResponseMessage response = await httpclient.PostAsync(this.uri, content);
