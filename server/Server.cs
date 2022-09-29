@@ -128,7 +128,6 @@ namespace server
             //if the request is looking for a new command
             JsonElement root = clientData.RootElement;
             //attempt to register the client based off of request
-            Console.WriteLine(root);
             try{
                 JsonElement register = root.GetProperty("register");
                 RegisterAgent(root.GetProperty("hostname"));
@@ -146,9 +145,12 @@ namespace server
 
         //per https://zetcode.com/csharp/httplistener/ 
         public void RegisterAgent(JsonElement hostname){
-            Console.WriteLine("Registering {0}",hostname);
+            //Register the agent if it is not already registered
+            Console.WriteLine("\nRegistering {0}",hostname);
             //if it is valid
+            File.Create($"data/listeners/{this.Name}/agents/{hostname}.json");
                 //store the client's information in a file
+                //data should be json at some point for better usability
             //if it isn't
                 //return a 404 or just dont respond
         }
