@@ -8,16 +8,20 @@ namespace server
 {
     public class Server{
         static void Main(string[] args){
-            //take command line arguments of Name, Port, IPaddress
-            Listener test = new Listener(args[0], Int32.Parse(args[1]), args[2]);
-            test.StartServer();
-            //start the async listener
-            test.Listen();
-            //test async
-            Console.WriteLine("Enter your favorite color");
-            string color = Console.ReadLine();
-            Console.WriteLine("Color: {0}",color);
-            test.Terminate();
+            try {
+                //take command line arguments of Name, Port, IPaddress
+                Listener test = new Listener(args[0], Int32.Parse(args[1]), args[2]);
+                UserInput input = new UserInput();
+                test.StartServer();
+                //start the async listener
+                test.Listen();
+                //start our menu and take server input
+                input.MenuInput();
+                test.Terminate();
+            } catch (System.IndexOutOfRangeException) {
+                Console.WriteLine("Please provide the name of the listener, port to listen on, and the IP to bind to.");
+                Environment.Exit(0);
+            }
         }
     }
 
@@ -42,6 +46,9 @@ namespace server
         private HttpListener _listener;
 
         public Listener(string name, int port, string ipaddress){
+            //Constructor for the Listener object. 
+            //Listener is the main class of the server
+            //and handles connections with clients
             this.Name = name;
             this.Port = port;
             this.Ipaddress = ipaddress;
@@ -109,7 +116,7 @@ namespace server
                 output.Write(buffer,0,buffer.Length);
             }
             // You must close the output stream.
-            Console.WriteLine("Listener Closed");
+            //Console.WriteLine("Listener Closed");
             //output.Close();
         }
 
