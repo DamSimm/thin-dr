@@ -124,6 +124,12 @@ namespace server
             //will construct a response string to send to the client based on requests
             Console.WriteLine(text);
             return $"<HTML><BODY> Hello {text}</BODY></HTML>";
+            //if the request is looking for a new command
+                //check if there is a qued command for them
+            //else if this is a new client
+                //RegisterAgent
+            //else
+                //say no
         }
 
         //per https://zetcode.com/csharp/httplistener/ 
@@ -131,6 +137,11 @@ namespace server
             //accept POST requests to register an agent
             //HttpListenerContext ctx = _listener.GetContext();
             //using HttpListenerResponse resp = ctx.Response();
+            //check the key that is given via POST
+            //if it is valid
+                //store the client's information in a file
+            //if it isn't
+                //return a 404 or just dont respond
         }
     }
 }
