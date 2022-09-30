@@ -41,6 +41,7 @@ namespace server
         private string path {get; set;}
         private string keyPath {get; set;}
         private string filePath {get; set;}
+        public string logPath {get; set;}
         private string agentsPath {get; set;}
         public string Name {get; set;}
         public int Port {get; set;}
@@ -59,11 +60,13 @@ namespace server
             this.path = $"data/listeners/{this.Name}/";
             this.keyPath = $"{this.path}key";
             this.filePath = $"{this.path}files/";
+            this.logPath = $"{this.path}logs/";
             this.agentsPath = $"{this.path}agents/";
 
             //Create the paths defined above if they don't already exist
             Directory.CreateDirectory(this.path);
             Directory.CreateDirectory(this.filePath);
+            Directory.CreateDirectory(this.logPath);
             Directory.CreateDirectory(this.agentsPath);
 
             //will need to generate a key in this location
@@ -143,25 +146,36 @@ namespace server
                 //say no
         }
 
-        //per https://zetcode.com/csharp/httplistener/ 
         public async Task RegisterAgent(JsonElement hostname, JsonElement root){
+            //register an agent if they arent already registered
             string filePath = $"data/listeners/{this.Name}/agents/{hostname.GetString()}.json";
             //check if the agent is authorized
             bool auth = true;
             //Register the agent if it is not already registered
             if (auth){
                 if(!File.Exists(filePath)){
-                    Console.WriteLine("\nRegistering {0}",hostname.GetString());
+                    LogServer($"Registering {hostname.GetString()}\n");
                     //write the data sent by the new agent to a file
                     await File.WriteAllTextAsync(filePath, root.ToString());
                 } else {
+                    //if it isn't
+                        //return a 404 or just dont respond
                     //should eventually affirm to the client that they are registered
-                    Console.WriteLine($"\nQuery by {hostname}");
+                    LogServer($"Query by {hostname}\n");
                 }
             }
+        }
 
-            //if it isn't
-                //return a 404 or just dont respond
+        public void LogServer(string log){
+            //writes to a log file for the listener
+            //create the file if it doesnt exist
+            string path = $"{this.logPath}/log.txt";
+            if (!File.Exists(path))
+                File.Create(path);
+           
+            using (StreamWriter sw = File.AppendText(path)){
+                sw.WriteLine(log);
+            }
         }
     }
 }
