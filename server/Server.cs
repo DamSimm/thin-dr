@@ -130,7 +130,7 @@ namespace server
             //attempt to register the client based off of request
             try{
                 JsonElement register = root.GetProperty("register");
-                RegisterAgent(root.GetProperty("hostname"));
+                RegisterAgent(root.GetProperty("hostname"), root);
                 return $"<HTML><BODY> Hello {root.GetProperty("hostname")}</BODY></HTML>";
             } catch (KeyNotFoundException) {
                 Console.WriteLine("no");
@@ -144,13 +144,22 @@ namespace server
         }
 
         //per https://zetcode.com/csharp/httplistener/ 
-        public void RegisterAgent(JsonElement hostname){
+        public async Task RegisterAgent(JsonElement hostname, JsonElement root){
+            string filePath = $"data/listeners/{this.Name}/agents/{hostname.GetString()}.json";
+            //check if the agent is authorized
+            bool auth = true;
             //Register the agent if it is not already registered
-            Console.WriteLine("\nRegistering {0}",hostname);
-            //if it is valid
-            File.Create($"data/listeners/{this.Name}/agents/{hostname}.json");
-                //store the client's information in a file
-                //data should be json at some point for better usability
+            if (auth){
+                if(!File.Exists(filePath)){
+                    Console.WriteLine("\nRegistering {0}",hostname.GetString());
+                    //write the data sent by the new agent to a file
+                    await File.WriteAllTextAsync(filePath, root.ToString());
+                } else {
+                    //should eventually affirm to the client that they are registered
+                    Console.WriteLine($"\nQuery by {hostname}");
+                }
+            }
+
             //if it isn't
                 //return a 404 or just dont respond
         }
