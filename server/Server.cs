@@ -14,7 +14,7 @@ namespace server
             try {
                 //take command line arguments of Name, Port, IPaddress
                 Listener test = new Listener(args[0], Int32.Parse(args[1]), args[2]);
-                UserInput input = new UserInput();
+                UserInput input = new UserInput(test);
                 test.StartServer();
                 //start the async listener
                 test.Listen();
@@ -42,7 +42,7 @@ namespace server
         private string keyPath {get; set;}
         private string filePath {get; set;}
         public string logPath {get; set;}
-        private string agentsPath {get; set;}
+        public string agentsPath {get; set;}
         public string Name {get; set;}
         public int Port {get; set;}
         public string Ipaddress {get; set;}
