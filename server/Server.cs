@@ -111,7 +111,7 @@ namespace server
 
                 // Construct a response.
                 HttpListenerResponse response = context.Response;
-                string responseString = RespondToClient(clientData);
+                string responseString = await RespondToClient(clientData);
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
 
                 // Get a response stream and write the response to it.
@@ -126,14 +126,14 @@ namespace server
             //output.Close();
         }
 
-        public string RespondToClient(JsonDocument clientData){
+        public async Task<string> RespondToClient(JsonDocument clientData){
             //will construct a response string to send to the client based on requests
             //if the request is looking for a new command
             JsonElement root = clientData.RootElement;
             //attempt to register the client based off of request
             try{
                 JsonElement register = root.GetProperty("register");
-                RegisterAgent(root.GetProperty("hostname"), root);
+                await RegisterAgent(root.GetProperty("hostname"), root);
                 return $"<HTML><BODY> Hello {root.GetProperty("hostname")}</BODY></HTML>";
             } catch (KeyNotFoundException) {
                 Console.WriteLine("no");
@@ -154,16 +154,23 @@ namespace server
             //Register the agent if it is not already registered
             if (auth){
                 if(!File.Exists(filePath)){
+                    //create the file if it exists
                     LogServer($"Registering {hostname.GetString()}\n");
                     //write the data sent by the new agent to a file
-                    await File.WriteAllTextAsync(filePath, root.ToString());
+                    //NOTE: WriteAllTextAsync will overwrite the file. consider this in the future
+                    await File.AppendAllTextAsync(filePath, root.ToString());
+                    /*
+                    using (StreamWriter sw = File.AppendText(filePath)){
+                        sw.WriteLine(root.ToString());
+                    }
+                    */
                 } else {
-                    //if it isn't
-                        //return a 404 or just dont respond
                     //should eventually affirm to the client that they are registered
                     LogServer($"Query by {hostname}\n");
                 }
             }
+            //if it isn't authorized
+                //return a 404 or just dont respond
         }
 
         public void LogServer(string log){
