@@ -17,15 +17,19 @@ namespace client
         // tasks enables threading for now
         static async Task Main(string[] args)
         {
-            
-            //takes command line args of IP and Port
-            Communicator comm = new Communicator(args[0], Int32.Parse(args[1]));
-            //await Communicator.GetRequest(comm.host);
-            await comm.RegisterAgent();
+            try {
+                //takes command line args of IP and Port
+                Communicator comm = new Communicator(args[0], Int32.Parse(args[1]));
+                //await Communicator.GetRequest(comm.host);
+                await comm.RegisterAgent();
 
-            // test command exeuction
-            // this is a bit janky
-            //System.Diagnostics.Process.Start("cmd.exe", "/c whoami");
+                // test command exeuction
+                // this is a bit janky
+                //System.Diagnostics.Process.Start("cmd.exe", "/c whoami");
+            } catch (System.IndexOutOfRangeException) {
+                Console.WriteLine("Please provide the IP and port of the server to connect to.");
+                Environment.Exit(0);
+            }
         }
 
         
