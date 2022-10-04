@@ -131,14 +131,18 @@ namespace server
             //if the request is looking for a new command
             JsonElement root = clientData.RootElement;
             //attempt to register the client based off of request
-            try{
-                JsonElement register = root.GetProperty("register");
+            if (root.TryGetProperty("register", out JsonElement register)){
+                //check if the property exists
                 await RegisterAgent(root.GetProperty("hostname"), root);
                 return $"<HTML><BODY> Hello {root.GetProperty("hostname")}</BODY></HTML>";
-            } catch (KeyNotFoundException) {
-                Console.WriteLine("no");
-                return "lol";
+            } else {
+                return "404";
             }
+                //if the agent is already registered, then check the query buffer (unwritten)
+                    //for commands set by SetCommand for that client
+                //if not, then respond with nothing
+                //the agent should be written to do nothing when the server returns nothing
+                //perhaps a 501 maybe
                 //check if there is a qued command for them
             //else if this is a new client
                 //RegisterAgent
@@ -157,7 +161,7 @@ namespace server
                     //create the file if it exists
                     LogServer($"Registering {hostname.GetString()}\n");
                     //write the data sent by the new agent to a file
-                    //NOTE: WriteAllTextAsync will overwrite the file. consider this in the future
+                    //I think I want clients here to be objects
                     await File.AppendAllTextAsync(filePath, root.ToString());
                     /*
                     using (StreamWriter sw = File.AppendText(filePath)){

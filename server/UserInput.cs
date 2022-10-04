@@ -58,9 +58,15 @@ _________         _________ _               ______   _______
             //lists all the registered clients
             DirectoryInfo dir = new DirectoryInfo(this.listener.agentsPath);
             Console.WriteLine("\n");
+            //the json files will eventually be object files
             foreach (var file in dir.GetFiles("*.json")){
                 Console.WriteLine(file.Name.Remove(file.Name.Length-5));
             }
+        }
+
+        public void SetCommand(string hostname, string command){
+            //set a command for a client to query
+            //set the "query buffer" to be json including the hostname and the command
         }
     }
 }
