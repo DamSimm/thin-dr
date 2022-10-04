@@ -17,7 +17,8 @@ namespace server{
         private string Menu(){
             //returns a menu
             //should be made generic and with input
-            //in the constructor
+            //in the constructor *theoretically*
+            Console.Clear();
             Console.WriteLine(@"
 _________         _________ _               ______   _______ 
 \__   __/|\     /|\__   __/( (    /|       (  __  \ (  ____ )

@@ -182,8 +182,6 @@ namespace server
                 }
             }
             return 1;
-            //if it isn't authorized
-                //return a 404 or just dont respond
         }
 
         public void LogServer(string log){
