@@ -9,6 +9,19 @@ using System.Threading.Tasks;
 
 namespace server
 {
+
+    public class Agent{
+        // a class to represent and hold data for each agent/client
+        public string name{get; set;}
+        public string ipAddress{get; set;}
+        public string[] commandQue{get; set;}
+        public Agent(string name, string ipAddress, string[] commandQue){
+            this.name = name;
+            this.ipAddress = ipAddress;
+            this.commandQue = commandQue;
+        }
+    }
+
     public class Server{
         static void Main(string[] args){
             try {
