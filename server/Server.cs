@@ -165,7 +165,7 @@ namespace server
             if (auth){
                 if(!File.Exists(filePath)){
                     //create the file if it exists
-                    LogServer($"Registering {hostname.GetString()}\n");
+                    LogServer($"Registering {hostname.GetString()}");
                     //write the data sent by the new agent to a file
                     //I think I want clients here to be objects
                     await File.AppendAllTextAsync(filePath, root.ToString());
@@ -177,7 +177,7 @@ namespace server
                     return 0;
                 } else {
                     //should eventually affirm to the client that they are registered
-                    LogServer($"Query by {hostname}\n");
+                    LogServer($"Query by {hostname}");
                     return 1;
                 }
             }
