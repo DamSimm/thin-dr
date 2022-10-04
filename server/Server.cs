@@ -133,8 +133,12 @@ namespace server
             //attempt to register the client based off of request
             if (root.TryGetProperty("register", out JsonElement register)){
                 //check if the property exists
-                await RegisterAgent(root.GetProperty("hostname"), root);
-                return $"<HTML><BODY> Hello {root.GetProperty("hostname")}</BODY></HTML>";
+                int registration = await RegisterAgent(root.GetProperty("hostname"), root);
+                if (registration == 0){
+                    return $"<HTML><BODY> Hello {root.GetProperty("hostname")}</BODY></HTML>";
+                } else{
+                    return $"Client {root.GetProperty("hostname")} already registered";
+                }
             } else {
                 return "404";
             }
@@ -150,8 +154,10 @@ namespace server
                 //say no
         }
 
-        public async Task RegisterAgent(JsonElement hostname, JsonElement root){
+        public async Task<int> RegisterAgent(JsonElement hostname, JsonElement root){
             //register an agent if they arent already registered
+            //return 0 on register
+            //return 1 if already registered
             string filePath = $"data/listeners/{this.Name}/agents/{hostname.GetString()}.json";
             //check if the agent is authorized
             bool auth = true;
@@ -168,11 +174,14 @@ namespace server
                         sw.WriteLine(root.ToString());
                     }
                     */
+                    return 0;
                 } else {
                     //should eventually affirm to the client that they are registered
                     LogServer($"Query by {hostname}\n");
+                    return 1;
                 }
             }
+            return 1;
             //if it isn't authorized
                 //return a 404 or just dont respond
         }
