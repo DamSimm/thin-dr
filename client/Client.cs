@@ -89,6 +89,36 @@ namespace client
                 Console.WriteLine("Message :{0} ",e.Message);
             }
         }
+
+        public async Task GetCommand()
+        {
+            // get commands from server
+            // by commands I mean json from server on what to do
+
+            // exact copy of register agent code for now
+            // TODO: verify how URL to interact is
+            try
+            {
+                // get machine hostname
+                string hostname = System.Environment.MachineName;
+                // build httpcontent body with hostname
+                string contentBody = $"{{\"hostname\": \"{hostname}\",\"register\": \"true\"}}";
+                HttpContent content = new StringContent(contentBody);
+
+                // send to server for registration
+                HttpResponseMessage response = await httpclient.PostAsync(this.uri, content);
+                response.EnsureSuccessStatusCode();
+
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ",e.Message);
+            }
+            
+        }
+        
     }
 
 }
