@@ -47,10 +47,11 @@ _________         _________ _               ______   _______
                         menuLoop = false;
                         break;
                     case "2":
+                        Console.WriteLine("Registered Clients:");
                         ListClients();
                         break;
                     default: 
-                        Console.WriteLine("\nInvalid input; Please try again.\n");
+                        Console.WriteLine("\nInvalid input; Please try again.");
                         break;
                 }
             }
@@ -65,9 +66,10 @@ _________         _________ _               ______   _______
             }
         }
 
-        public void SetCommand(string hostname, string command){
+        public void SetCommand(Agent agent, string command){
             //set a command for a client to query
             //set the "query buffer" to be json including the hostname and the command
+            agent.commandQue.AddLast(command);
         }
     }
 }

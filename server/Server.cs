@@ -9,16 +9,15 @@ using System.Threading.Tasks;
 
 namespace server
 {
-
     public class Agent{
         // a class to represent and hold data for each agent/client
         public string name{get; set;}
         public string ipAddress{get; set;}
-        public string[] commandQue{get; set;}
-        public Agent(string name, string ipAddress, string[] commandQue){
+        public LinkedList<String> commandQue{get; set;}
+        public Agent(string name, string ipAddress){
             this.name = name;
             this.ipAddress = ipAddress;
-            this.commandQue = commandQue;
+            this.commandQue = new LinkedList<String>();
         }
     }
 
@@ -96,9 +95,11 @@ namespace server
             _listener.Start();
             //check if our server is listening
             if (_listener.IsListening){
-                Console.WriteLine($"Server is listening at {url}");
+                LogServer($"Server is listening at {url}");
             } else {
-                Console.WriteLine($"Server failed to start at {url}");
+                string log = $"Server failed to start at {url}";
+                Console.WriteLine(log);
+                LogServer(log);
             }
         }
 
@@ -149,9 +150,8 @@ namespace server
                 int registration = await RegisterAgent(root.GetProperty("hostname"), root);
                 if (registration == 0){
                     return $"<HTML><BODY> Hello {root.GetProperty("hostname")}</BODY></HTML>";
-                } else{
-                    return $"Client {root.GetProperty("hostname")} already registered";
-                }
+                } 
+                return $"Client {root.GetProperty("hostname")} already registered";
             } else {
                 return "404";
             }
@@ -182,11 +182,6 @@ namespace server
                     //write the data sent by the new agent to a file
                     //I think I want clients here to be objects
                     await File.AppendAllTextAsync(filePath, root.ToString());
-                    /*
-                    using (StreamWriter sw = File.AppendText(filePath)){
-                        sw.WriteLine(root.ToString());
-                    }
-                    */
                     return 0;
                 } else {
                     //should eventually affirm to the client that they are registered
