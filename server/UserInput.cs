@@ -18,7 +18,6 @@ namespace server{
             //returns a menu
             //should be made generic and with input
             //in the constructor *theoretically*
-            Console.Clear();
             Console.WriteLine(@"
 _________         _________ _               ______   _______ 
 \__   __/|\     /|\__   __/( (    /|       (  __  \ (  ____ )
@@ -59,7 +58,6 @@ _________         _________ _               ______   _______
         public void ListClients(){
             //lists all the registered clients
             DirectoryInfo dir = new DirectoryInfo(this.listener.agentsPath);
-            Console.WriteLine("\n");
             //the json files will eventually be object files
             foreach (var file in dir.GetFiles("*.json")){
                 Console.WriteLine(file.Name.Remove(file.Name.Length-5));

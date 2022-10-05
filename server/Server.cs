@@ -23,6 +23,7 @@ namespace server
 
     public class Server{
         static void Main(string[] args){
+            Console.Clear();
             try {
                 //take command line arguments of Name, Port, IPaddress
                 Listener test = new Listener(args[0], Int32.Parse(args[1]), args[2]);
@@ -59,6 +60,7 @@ namespace server
         public int Port {get; set;}
         public string Ipaddress {get; set;}
         public string key {get; set;}
+        public Agent[] agents {get; set;}
         private HttpListener _listener;
 
         public Listener(string name, int port, string ipaddress){
@@ -74,6 +76,7 @@ namespace server
             this.filePath = $"{this.path}files/";
             this.logPath = $"{this.path}logs/";
             this.agentsPath = $"{this.path}agents/";
+            this.agents = new Agent[]{};
 
             //Create the paths defined above if they don't already exist
             Directory.CreateDirectory(this.path);
@@ -145,17 +148,20 @@ namespace server
             //if the request is looking for a new command
             JsonElement root = clientData.RootElement;
             //attempt to register the client based off of request
+            //check if the property exists
             if (root.TryGetProperty("register", out JsonElement register)){
-                //check if the property exists
+                //register the agent
                 int registration = await RegisterAgent(root.GetProperty("hostname"), root);
                 if (registration == 0){
                     return $"<HTML><BODY> Hello {root.GetProperty("hostname")}</BODY></HTML>";
                 } 
                 return $"Client {root.GetProperty("hostname")} already registered";
+            } else if (root.TryGetProperty("action", out JsonElement query)){
+               return "action";
             } else {
                 return "404";
             }
-                //if the agent is already registered, then check the query buffer (unwritten)
+                //if the agent is already registered, then check the query buffer
                     //for commands set by SetCommand for that client
                 //if not, then respond with nothing
                 //the agent should be written to do nothing when the server returns nothing
@@ -180,7 +186,10 @@ namespace server
                     //create the file if it exists
                     LogServer($"Registering {hostname.GetString()}");
                     //write the data sent by the new agent to a file
-                    //I think I want clients here to be objects
+
+                    //we'll need to recieve the ip on register
+                    Agent newAgent = new Agent(hostname.GetString(), "127.0.0.1");
+                    this.agents[this.agents.Length] = newAgent;
                     await File.AppendAllTextAsync(filePath, root.ToString());
                     return 0;
                 } else {
