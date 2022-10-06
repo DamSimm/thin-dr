@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.IO;
 using System.Text;
@@ -57,10 +58,9 @@ _________         _________ _               ______   _______
         }
         public void ListClients(){
             //lists all the registered clients
-            DirectoryInfo dir = new DirectoryInfo(this.listener.agentsPath);
-            //the json files will eventually be object files
-            foreach (var file in dir.GetFiles("*.json")){
-                Console.WriteLine(file.Name.Remove(file.Name.Length-5));
+            List<Agent> agents = this.listener.agents;
+            foreach (var agent in agents){
+                Console.WriteLine(agent.name);
             }
         }
 

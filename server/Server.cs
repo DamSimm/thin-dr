@@ -30,7 +30,8 @@ namespace server
                 UserInput input = new UserInput(test);
                 test.StartServer();
                 //start the async listener
-                test.Listen();
+                test.LoadRegisteredClients();
+                test.ListenAndRespond();
                 //start our menu and take server input
                 input.MenuInput();
                 test.Terminate();
@@ -60,7 +61,7 @@ namespace server
         public int Port {get; set;}
         public string Ipaddress {get; set;}
         public string key {get; set;}
-        public Agent[] agents {get; set;}
+        public List<Agent> agents {get; set;}
         private HttpListener _listener;
 
         public Listener(string name, int port, string ipaddress){
@@ -76,7 +77,7 @@ namespace server
             this.filePath = $"{this.path}files/";
             this.logPath = $"{this.path}logs/";
             this.agentsPath = $"{this.path}agents/";
-            this.agents = new Agent[]{};
+            this.agents = new List<Agent>();
 
             //Create the paths defined above if they don't already exist
             Directory.CreateDirectory(this.path);
@@ -111,7 +112,23 @@ namespace server
             _listener.Stop();
         }
 
-        public async Task Listen(){
+        public void LoadRegisteredClients(){
+            //on startup, the server will need to load any agents that have
+            //already been registered
+            string[] agents = Directory.GetFiles(this.agentsPath);
+            foreach(string agentFile in agents){
+                StreamReader reader = File.OpenText(agentFile);
+                try {
+                    string line = reader.ReadLine();
+                    Agent loadAgent = JsonSerializer.Deserialize<Agent>(line);
+                    this.agents.Add(loadAgent);
+                } catch (Exception e){
+                    Console.WriteLine("exception: " + e);
+                }
+            }
+        }
+
+        public async Task ListenAndRespond(){
             //The main method of this class
             //per https://learn.microsoft.com/en-us/dotnet/api/system.net.httplistener?view=net-6.0
             //and https://gist.github.com/define-private-public/d05bc52dd0bed1c4699d49e2737e80e7
@@ -147,17 +164,25 @@ namespace server
             //will construct a response string to send to the client based on requests
             //if the request is looking for a new command
             JsonElement root = clientData.RootElement;
+            JsonElement hostname = root.GetProperty("hostname");
             //attempt to register the client based off of request
             //check if the property exists
             if (root.TryGetProperty("register", out JsonElement register)){
                 //register the agent
-                int registration = await RegisterAgent(root.GetProperty("hostname"), root);
+                int registration = await RegisterAgent(hostname, root);
                 if (registration == 0){
-                    return $"<HTML><BODY> Hello {root.GetProperty("hostname")}</BODY></HTML>";
+                    return $"";
                 } 
-                return $"Client {root.GetProperty("hostname")} already registered";
-            } else if (root.TryGetProperty("action", out JsonElement query)){
-               return "action";
+                return $"Client {hostname} already registered";
+            } else if (root.TryGetProperty("command", out JsonElement query)){
+                LogServer($"command query from {hostname}");
+                foreach(Agent agent in this.agents){
+                    Console.WriteLine(agent);
+                    if (agent.name == hostname.GetString()){
+                        return "lala";
+                    }
+                }
+                return "not in server";
             } else {
                 return "404";
             }
@@ -188,9 +213,10 @@ namespace server
                     //write the data sent by the new agent to a file
 
                     //we'll need to recieve the ip on register
+                    //create a new Agent to store the information of the agents in memory
                     Agent newAgent = new Agent(hostname.GetString(), "127.0.0.1");
-                    this.agents[this.agents.Length] = newAgent;
-                    await File.AppendAllTextAsync(filePath, root.ToString());
+                    this.agents.Add(newAgent);
+                    await File.AppendAllTextAsync(filePath, JsonSerializer.Serialize(newAgent));
                     return 0;
                 } else {
                     //should eventually affirm to the client that they are registered
