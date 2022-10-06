@@ -176,15 +176,16 @@ namespace server
                 //register the agent
                 int registration = await RegisterAgent(hostname, root);
                 if (registration == 0){
-                    return $"";
+                    return "{\"registered\":\"true\"}";
                 } 
-                return $"Client {hostname} already registered";
+                return "{\"registered\":\"false\"}";
             } else if (root.TryGetProperty("command", out JsonElement query)){
                 LogServer($"command query from {hostname}");
                 foreach(Agent agent in this.agents){
-                    Console.WriteLine(agent);
                     if (agent.name == hostname.GetString()){
-                        return JsonSerializer.Serialize(agent.commandQue);
+                        var jsonCommandQue = JsonSerializer.Serialize(agent.commandQue);
+                        agent.commandQue.Clear();
+                        return FormatCommand(jsonCommandQue);
                     }
                 }
                 return "not in server";
@@ -220,6 +221,12 @@ namespace server
                 }
             }
             return 1;
+        }
+
+        public string FormatCommand(string commands){
+            //takes in a command and formats it for the client
+            return "{'commands': '" + commands + "'}";
+            
         }
 
         public void LogServer(string log){

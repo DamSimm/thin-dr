@@ -1,6 +1,7 @@
 ﻿using System;
 // per https://learn.microsoft.com/en-us/dotnet/csharp/tutorials/console-webapiclient
 using System.Threading.Tasks;
+using System.Net;
 using System.Net.Http;
 using System.Runtime;
 using System.IO;
@@ -109,7 +110,7 @@ namespace client
                 // get machine hostname
                 string hostname = System.Environment.MachineName;
                 // build httpcontent body with hostname
-                string contentBody = $"{{\"hostname\": \"{hostname}\",\"register\": \"true\"}}";
+                string contentBody = $"{{\"hostname\": \"{hostname}\",\"command\": \"true\"}}";
                 HttpContent content = new StringContent(contentBody);
 
                 // send to server for registration
