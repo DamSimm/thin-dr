@@ -29,11 +29,14 @@ namespace server
                 Listener test = new Listener(args[0], Int32.Parse(args[1]), args[2]);
                 UserInput input = new UserInput(test);
                 test.StartServer();
-                //start the async listener
+                //load already registered clients
                 test.LoadRegisteredClients();
+                //start the async listener
                 test.ListenAndRespond();
                 //start our menu and take server input
+                //acts as a block for the async functions
                 input.MenuInput();
+                //stop the server
                 test.Terminate();
             } catch (System.IndexOutOfRangeException) {
                 Console.WriteLine("Please provide the name of the listener, port to listen on, and the IP to bind to.");
@@ -119,9 +122,11 @@ namespace server
             foreach(string agentFile in agents){
                 StreamReader reader = File.OpenText(agentFile);
                 try {
+                    //load an agent from disk 
                     string line = reader.ReadLine();
                     Agent loadAgent = JsonSerializer.Deserialize<Agent>(line);
                     this.agents.Add(loadAgent);
+                    LogServer($"Loading {loadAgent.name} into memory");
                 } catch (Exception e){
                     Console.WriteLine("exception: " + e);
                 }
@@ -179,23 +184,13 @@ namespace server
                 foreach(Agent agent in this.agents){
                     Console.WriteLine(agent);
                     if (agent.name == hostname.GetString()){
-                        return "lala";
+                        return JsonSerializer.Serialize(agent.commandQue);
                     }
                 }
                 return "not in server";
             } else {
                 return "404";
             }
-                //if the agent is already registered, then check the query buffer
-                    //for commands set by SetCommand for that client
-                //if not, then respond with nothing
-                //the agent should be written to do nothing when the server returns nothing
-                //perhaps a 501 maybe
-                //check if there is a qued command for them
-            //else if this is a new client
-                //RegisterAgent
-            //else
-                //say no
         }
 
         public async Task<int> RegisterAgent(JsonElement hostname, JsonElement root){

