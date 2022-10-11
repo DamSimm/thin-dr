@@ -227,7 +227,7 @@ namespace server
 
         public string FormatCommand(string commands){
             //takes in a command and formats it for the client
-            return "{'commands': '" + commands + "'}";
+            return "{\"commands\": " + commands + "}";
             
         }
 

