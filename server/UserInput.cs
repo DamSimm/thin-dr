@@ -28,7 +28,7 @@ _________         _________ _               ______   _______
             //returns a menu
             //should be made generic and with input
             //in the constructor *theoretically*
-            Console.WriteLine("");
+
             //the following are modified from Spectre Console docs
             // https://spectreconsole.net/widgets/table
             // https://spectreconsole.net/prompts/selection
@@ -42,7 +42,7 @@ _________         _________ _               ______   _______
             // Add some rows
             menuOptions.AddRow("1","[red]Exit[/]");
             menuOptions.AddRow("2","[blue]List all Clients[/]");
-            menuOptions.AddRow("3","[green]Set a Command[/]");
+            menuOptions.AddRow("3","[green]Run a Console Command[/]");
 
             // Render the tables to the console
             AnsiConsole.Write(menuOptions);
@@ -52,7 +52,7 @@ _________         _________ _               ______   _______
                     .Title("What would you like to do?")
                     .PageSize(3)
                     .AddChoices(new[] {
-                        "Exit", "List Clients", "Set Command"
+                        "Exit", "List Clients", "Run a Console Command"
                 }));
             return prompt;
         }
@@ -76,7 +76,7 @@ _________         _________ _               ______   _______
                         }
                         AnsiConsole.Write(clients);
                         break;
-                    case "Set Command":
+                    case "Run a Console Command":
                         SetCommand();
                         break;
                     default: 
@@ -110,9 +110,9 @@ _________         _________ _               ______   _______
             //would benefit from Listener.agents being a hash table
             foreach (var agent in this.listener.agents){
                if(agent.name == prompt){
-                  Console.WriteLine("What command do you want to run: ");
-                  string command = Console.ReadLine();
+                  var command = AnsiConsole.Ask<string>("Enter the console [red]command to run:[/] ");
                   agent.commandQue.AddLast(command);
+                  Console.WriteLine("\n");
                   return 0;
                }
             }
