@@ -31,6 +31,10 @@ namespace client
                 // run getcommand every 5 seconds
                 int AgentCheckInterval = 5000;
                 while (true) {
+                    if(comm.errored){
+                        Console.WriteLine("Error in communication, exiting");
+                        break;
+                    }
                     await comm.GetCommand();
                     await Task.Delay(AgentCheckInterval);
                 }
@@ -53,6 +57,7 @@ namespace client
         public string host {get; set;}
         public int port {get; set;}
         public Uri uri {get; set;}
+        public bool errored {get; set;}
         public Communicator(string host, int port)
         {
             this.host = host;
@@ -61,6 +66,8 @@ namespace client
             // build uri
             Uri uri = new Uri($"http://{this.host}:{this.port}");
             this.uri = uri;
+
+            this.errored = false;
         }
 
         public static async Task GetRequest(string url)
@@ -77,25 +84,20 @@ namespace client
         // register agent with server
         public async Task RegisterAgent()
         {
-            try
-            {
-                // get machine hostname
-                string hostname = System.Environment.MachineName;
-                // build httpcontent body with hostname
-                string contentBody = $"{{\"hostname\": \"{hostname}\",\"register\": \"true\"}}";
-                HttpContent content = new StringContent(contentBody);
 
-                // send to server for registration
-                HttpResponseMessage response = await httpclient.PostAsync(this.uri, content);
-                response.EnsureSuccessStatusCode();
+            // get machine hostname
+            string hostname = System.Environment.MachineName;
+            // build httpcontent body with hostname
+            string contentBody = $"{{\"hostname\": \"{hostname}\",\"register\": \"true\"}}";
+            HttpContent content = new StringContent(contentBody);
+            bool sent = await this.BuildAndSendHTTPRequest(content);
+            if (sent) {
+                Console.WriteLine("Agent registered with server.");
+            } else {
+                Console.WriteLine("Agent failed to register with server.");
+                this.errored = true;
+            }
 
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
-            }
-            catch (HttpRequestException e)
-            {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ",e.Message);
-            }
         }
 
         public async Task GetCommand()
@@ -103,6 +105,7 @@ namespace client
             // get commands from server
             // by commands I mean json from server on what to do
 
+<<<<<<< Updated upstream
             // exact copy of register agent code for now
             // TODO: verify how URL to interact is
             try
@@ -112,19 +115,41 @@ namespace client
                 // build httpcontent body with hostname
                 string contentBody = $"{{\"hostname\": \"{hostname}\",\"command\": \"true\"}}";
                 HttpContent content = new StringContent(contentBody);
+=======
+             // get machine hostname
+            string hostname = System.Environment.MachineName;
+            // build httpcontent body with hostname
+            string contentBody = $"{{\"hostname\": \"{hostname}\",\"register\": \"true\"}}";
+            HttpContent content = new StringContent(contentBody);
+            bool sent = await this.BuildAndSendHTTPRequest(content);
+            if (sent) {
+                Console.WriteLine("Agent registered with server.");
+            } else {
+                Console.WriteLine("Agent failed to register with server.");
+                this.errored = true;
+            }
+            
+        }
+>>>>>>> Stashed changes
 
+        public async Task<bool> BuildAndSendHTTPRequest(HttpContent content)
+        {
+            try{
                 // send to server for registration
                 HttpResponseMessage response = await httpclient.PostAsync(this.uri, content);
                 response.EnsureSuccessStatusCode();
 
                 Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+                return true;
             }
             catch (HttpRequestException e)
             {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ",e.Message);
+                //Console.WriteLine("\nException Caught!");
+                //Console.WriteLine("Message :{0} ",e.Message);
+
+                return false;
             }
-            
         }
         
     }
