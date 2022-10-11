@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Spectre.Console;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace server{
     public class UserInput{
@@ -33,27 +33,27 @@ _________         _________ _               ______   _______
             // https://spectreconsole.net/widgets/table
             // https://spectreconsole.net/prompts/selection
             // Create a table
-            var table = new Table();
+            var menuOptions = new Table();
 
             // Add some columns
-            table.AddColumn("#");
-            table.AddColumn(new TableColumn("Command"));
+            menuOptions.AddColumn("#");
+            menuOptions.AddColumn(new TableColumn("Command"));
 
             // Add some rows
-            table.AddRow("1","[red]Exit[/]");
-            table.AddRow("2","[blue]List all Clients[/]");
-            table.AddRow("3","[green]Set a Command[/]");
+            menuOptions.AddRow("1","[red]Exit[/]");
+            menuOptions.AddRow("2","[blue]List all Clients[/]");
+            menuOptions.AddRow("3","[green]Set a Command[/]");
 
-            // Render the table to the console
-            AnsiConsole.Write(table);
+            // Render the tables to the console
+            AnsiConsole.Write(menuOptions);
             // added a prompt for the menu
             var prompt = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("What would you like to do?")
-                    .PageSize(10)
+                    .PageSize(3)
                     .AddChoices(new[] {
                         "Exit", "List Clients", "Set Command"
-            }));
+                }));
             return prompt;
         }
 
@@ -69,10 +69,12 @@ _________         _________ _               ______   _______
                         menuLoop = false;
                         break;
                     case "List Clients":
-                        Console.WriteLine("Registered Clients:");
+                        var clients = new Table();
+                        clients.AddColumn("Registered Clients");
                         foreach(var agent in ListClients()){
-                            Console.WriteLine(agent);
+                            clients.AddRow(agent);
                         }
+                        AnsiConsole.Write(clients);
                         break;
                     case "Set Command":
                         SetCommand();
@@ -98,11 +100,6 @@ _________         _________ _               ______   _______
         public int SetCommand(){
             //set a command for a client to query
             //set the "query buffer" to be json including the hostname and the command
-            //Console.WriteLine("Type the name of the client you would like to send a command to: ");
-            //Console.WriteLine("List: ");
-            //ListClients();
-            //Console.Write("\n");
-            //string client = Console.ReadLine();
             //search our listener's list for the specified agent
             var prompt = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
@@ -110,6 +107,7 @@ _________         _________ _               ______   _______
                     .PageSize(10)
                     .AddChoices(ListClients())
             );
+            //would benefit from Listener.agents being a hash table
             foreach (var agent in this.listener.agents){
                if(agent.name == prompt){
                   Console.WriteLine("What command do you want to run: ");

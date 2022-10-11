@@ -64,6 +64,7 @@ namespace server
         public int Port {get; set;}
         public string Ipaddress {get; set;}
         public string key {get; set;}
+        //The agent list should REALLY be a hash table
         public List<Agent> agents {get; set;}
         private HttpListener _listener;
 
@@ -180,6 +181,7 @@ namespace server
                 } 
                 return "{\"registered\":\"false\"}";
             } else if (root.TryGetProperty("command", out JsonElement query)){
+                //respond to the client who wants their commandQue
                 LogServer($"command query from {hostname}");
                 foreach(Agent agent in this.agents){
                     if (agent.name == hostname.GetString()){
@@ -188,7 +190,7 @@ namespace server
                         return FormatCommand(jsonCommandQue);
                     }
                 }
-                return "not in server";
+                return "{\"response\": \"Client not found!\"}";
             } else {
                 return "404";
             }
