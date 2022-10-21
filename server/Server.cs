@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Spectre.Console;
 
 namespace server
 {
@@ -14,10 +15,12 @@ namespace server
         public string name{get; set;}
         public string ipAddress{get; set;}
         public LinkedList<String> commandQue{get; set;}
+        public List<string> commandResp{get; set;}
         public Agent(string name, string ipAddress){
             this.name = name;
             this.ipAddress = ipAddress;
             this.commandQue = new LinkedList<String>();
+            this.commandResp = new List<string>();
         }
     }
 
@@ -182,6 +185,7 @@ namespace server
                 return "{\"registered\":\"false\"}";
             } else if (root.TryGetProperty("command", out JsonElement query)){
                 //respond to the client who wants their commandQue
+                //should really be a hash table
                 LogServer($"command query from {hostname}");
                 foreach(Agent agent in this.agents){
                     if (agent.name == hostname.GetString()){
@@ -191,6 +195,20 @@ namespace server
                     }
                 }
                 return "{\"response\": \"Client not found!\"}";
+            } else if (root.TryGetProperty("response", out JsonElement response)) {
+                //get and parse a client response
+                /*
+                var test = new Table();
+                test.AddColumn("response");
+                test.AddRow(response.ToString());
+                //AnsiConsole.Write(test);
+                foreach(Agent agent in this.agents){
+                    if (agent.name == hostname.GetString()){
+                        agent.commandResp.Add(response.ToString());
+                    }
+                }
+                */
+                return "done";
             } else {
                 return "404";
             }

