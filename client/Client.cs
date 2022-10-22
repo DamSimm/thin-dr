@@ -145,7 +145,6 @@ namespace client
                             result = result.Replace("\n", "").Replace("\r", "").Replace("\\", "\\\\");
                             string responseBody = $"{{\"hostname\": \"{hostname}\",\"response\": \"{result}\"}}";
                             
-                            Console.WriteLine(responseBody);
                             (bool l, string a) = await BuildAndSendHTTPRequest(new StringContent(responseBody));
 
                         }
@@ -164,9 +163,7 @@ namespace client
         {
             try{
                 // send to server for registration
-                Console.WriteLine("sending");
                 HttpResponseMessage response = await httpclient.PostAsync(this.uri, content);
-                Console.WriteLine("sent");
                 response.EnsureSuccessStatusCode();
 
                 Console.WriteLine(await response.Content.ReadAsStringAsync());
