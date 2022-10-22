@@ -205,7 +205,7 @@ namespace server
                 AnsiConsole.Write(test);
                 */
                 this.agents[hostname.GetString()].commandResp.Add(response.ToString());
-                return "done";
+                return "{\"response\": \"thanks\"}";
             } else {
                 return "404";
             }

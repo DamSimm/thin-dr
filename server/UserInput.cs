@@ -106,8 +106,6 @@ _________         _________ _               ______   _______
 
         public int SetCommand(){
             //set a command for a client to query
-            //set the "query buffer" to be json including the hostname and the command
-            //search our listener's list for the specified agent
             var prompt = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Select the client you would like to send a command to")
@@ -133,10 +131,11 @@ _________         _________ _               ______   _______
                     .AddChoices(ListClients())
             );
             if(this.listener.agents.TryGetValue(prompt, out Agent agent)){
-                Console.WriteLine($"Responses from {agent.name}");
+                AnsiConsole.Markup($"Responses from [red]{agent.name}[/]:\n");
                 foreach(var com in agent.commandResp){
                     Console.WriteLine(com);
                 }
+                Console.WriteLine("\n");
             }
             //return an empty list if the agent is not found
             return new List<string>();
