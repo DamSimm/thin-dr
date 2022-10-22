@@ -43,6 +43,7 @@ _________         _________ _               ______   _______
             menuOptions.AddRow("1","[red]Exit[/]");
             menuOptions.AddRow("2","[blue]List all Clients[/]");
             menuOptions.AddRow("3","[green]Run a Console Command[/]");
+            menuOptions.AddRow("4","[purple]View Responses[/]");
 
             // Render the tables to the console
             AnsiConsole.Write(menuOptions);
@@ -50,9 +51,9 @@ _________         _________ _               ______   _______
             var prompt = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("What would you like to do?")
-                    .PageSize(3)
+                    .PageSize(10)
                     .AddChoices(new[] {
-                        "Exit", "List Clients", "Run a Console Command"
+                        "Exit", "List Clients", "Run a Console Command", "View Responses"
                 }));
             return prompt;
         }
@@ -78,6 +79,10 @@ _________         _________ _               ______   _______
                         break;
                     case "Run a Console Command":
                         SetCommand();
+                        break;
+                    case "View Responses":
+                        var comT = new Table();
+                        ViewResponses();
                         break;
                     default: 
                         Console.WriteLine("\nInvalid input; Please try again.");
@@ -109,16 +114,32 @@ _________         _________ _               ______   _______
                     .PageSize(10)
                     .AddChoices(ListClients())
             );
-            //would benefit from Listener.agents being a hash table
-            foreach (var agent in this.listener.agents){
-               if(agent.Key == prompt){
-                  var command = AnsiConsole.Ask<string>("Enter the console [red]command to run:[/] ");
-                  agent.Value.commandQue.AddLast(command);
-                  Console.WriteLine("\n");
-                  return 0;
-               }
+            if(this.listener.agents.TryGetValue(prompt, out Agent agent)){
+                var command = AnsiConsole.Ask<string>("Enter the console [red]command to run:[/] ");
+                agent.commandQue.AddLast(command);
+                Console.WriteLine("\n");
+                return 0;
             }
+            
             return 1;
+        }
+
+        public List<string> ViewResponses(){
+            //return responses sent by each client
+            var prompt = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Select the client you'd like to see responses from")
+                    .PageSize(10)
+                    .AddChoices(ListClients())
+            );
+            if(this.listener.agents.TryGetValue(prompt, out Agent agent)){
+                Console.WriteLine($"Responses from {agent.name}");
+                foreach(var com in agent.commandResp){
+                    Console.WriteLine(com);
+                }
+            }
+            //return an empty list if the agent is not found
+            return new List<string>();
         }
     }
 }

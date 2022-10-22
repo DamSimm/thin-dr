@@ -197,17 +197,14 @@ namespace server
                 return "{\"response\": \"Client not found!\"}";
             } else if (root.TryGetProperty("response", out JsonElement response)) {
                 //get and parse a client response
+                
                 /*
                 var test = new Table();
                 test.AddColumn("response");
                 test.AddRow(response.ToString());
-                //AnsiConsole.Write(test);
-                foreach(Agent agent in this.agents){
-                    if (agent.name == hostname.GetString()){
-                        agent.commandResp.Add(response.ToString());
-                    }
-                }
+                AnsiConsole.Write(test);
                 */
+                this.agents[hostname.GetString()].commandResp.Add(response.ToString());
                 return "done";
             } else {
                 return "404";
