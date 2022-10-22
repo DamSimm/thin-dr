@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.IO;
@@ -10,20 +11,6 @@ using Spectre.Console;
 
 namespace server
 {
-    public class Agent{
-        // a class to represent and hold data for each agent/client
-        public string name{get; set;}
-        public string ipAddress{get; set;}
-        public LinkedList<String> commandQue{get; set;}
-        public List<string> commandResp{get; set;}
-        public Agent(string name, string ipAddress){
-            this.name = name;
-            this.ipAddress = ipAddress;
-            this.commandQue = new LinkedList<String>();
-            this.commandResp = new List<string>();
-        }
-    }
-
     public class Server{
         static void Main(string[] args){
             Console.Clear();
@@ -48,6 +35,20 @@ namespace server
         }
     }
 
+    public class Agent{
+        // a class to represent and hold data for each agent/client
+        public string name{get; set;}
+        public string ipAddress{get; set;}
+        public LinkedList<String> commandQue{get; set;}
+        public List<string> commandResp{get; set;}
+        public Agent(string name, string ipAddress){
+            this.name = name;
+            this.ipAddress = ipAddress;
+            this.commandQue = new LinkedList<String>();
+            this.commandResp = new List<string>();
+        }
+    }
+
     //we probably dont need this interface
     public interface IListen{
         string Name {get; set;}
@@ -68,7 +69,8 @@ namespace server
         public string Ipaddress {get; set;}
         public string key {get; set;}
         //The agent list should REALLY be a hash table
-        public List<Agent> agents {get; set;}
+        //public List<Agent> agents {get; set;}
+        public Dictionary<string, Agent> agents{get; set;}
         private HttpListener _listener;
 
         public Listener(string name, int port, string ipaddress){
@@ -84,7 +86,7 @@ namespace server
             this.filePath = $"{this.path}files/";
             this.logPath = $"{this.path}logs/";
             this.agentsPath = $"{this.path}agents/";
-            this.agents = new List<Agent>();
+            this.agents = new Dictionary<string, Agent>();
 
             //Create the paths defined above if they don't already exist
             Directory.CreateDirectory(this.path);
@@ -129,7 +131,7 @@ namespace server
                     //load an agent from disk 
                     string line = reader.ReadLine();
                     Agent loadAgent = JsonSerializer.Deserialize<Agent>(line);
-                    this.agents.Add(loadAgent);
+                    this.agents.Add(loadAgent.name, loadAgent);
                     LogServer($"Loading {loadAgent.name} into memory");
                 } catch (Exception e){
                     Console.WriteLine("exception: " + e);
@@ -187,12 +189,10 @@ namespace server
                 //respond to the client who wants their commandQue
                 //should really be a hash table
                 LogServer($"command query from {hostname}");
-                foreach(Agent agent in this.agents){
-                    if (agent.name == hostname.GetString()){
-                        var jsonCommandQue = JsonSerializer.Serialize(agent.commandQue);
-                        agent.commandQue.Clear();
-                        return FormatCommand(jsonCommandQue);
-                    }
+                if (this.agents.TryGetValue(hostname.GetString(), out Agent agent)){
+                    var jsonCommandQue = JsonSerializer.Serialize(agent.commandQue);
+                    agent.commandQue.Clear();
+                    return FormatCommand(jsonCommandQue);
                 }
                 return "{\"response\": \"Client not found!\"}";
             } else if (root.TryGetProperty("response", out JsonElement response)) {
@@ -231,7 +231,7 @@ namespace server
                     //we'll need to recieve the ip on register
                     //create a new Agent to store the information of the agents in memory
                     Agent newAgent = new Agent(hostname.GetString(), "127.0.0.1");
-                    this.agents.Add(newAgent);
+                    this.agents.Add(hostname.GetString(), newAgent);
                     await File.AppendAllTextAsync(filePath, JsonSerializer.Serialize(newAgent));
                     return 0;
                 } else {
