@@ -1,27 +1,37 @@
-*/bin
-*/data
-*/obj
-client/obj/client.csproj.nuget.dgspec.json
-client/client.csproj
-server/server.csproj
-client/client.csproj
-client/obj/client.csproj.nuget.dgspec.json
-client/obj/client.csproj.nuget.g.props
-client/obj/client.csproj.nuget.g.targets
-client/obj/project.assets.json
-client/obj/project.nuget.cache
-server/Server.cs
-server/server.csproj
-server/obj/project.assets.json
-server/obj/project.nuget.cache
-server/obj/server.csproj.nuget.dgspec.json
-server/obj/server.csproj.nuget.g.props
-server/obj/server.csproj.nuget.g.targets
-server/obj/Debug/net5.0/server.assets.cache
-server/obj/Debug/net5.0/server.csproj.CoreCompileInputs.cache
-server/obj/Debug/net5.0/server.csproj.FileListAbsolute.txt
-server/obj/Debug/net5.0/server.dll
-server/obj/Debug/net5.0/server.GeneratedMSBuildEditorConfig.editorconfig
-server/obj/Debug/net5.0/server.genruntimeconfig.cache
-server/obj/Debug/net5.0/server.pdb
-server/obj/Debug/net5.0/ref/server.dll
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+*.pyc
+nupkg/
+
+# Visual Studio Code
+.vscode
+
+# Rider
+.idea
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# Visual Studio 2015
+.vs/
