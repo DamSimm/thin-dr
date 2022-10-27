@@ -123,7 +123,7 @@ namespace server{
             //output.Close();
         }
 
-        public async Task<string> RespondToClient(JsonDocument clientData){
+        private async Task<string> RespondToClient(JsonDocument clientData){
             //will construct a response string to send to the client based on requests
             //if the request is looking for a new command
             JsonElement root = clientData.RootElement;
@@ -156,7 +156,7 @@ namespace server{
             }
         }
 
-        public async Task<int> RegisterAgent(JsonElement hostname, JsonElement root){
+        private async Task<int> RegisterAgent(JsonElement hostname, JsonElement root){
             //register an agent if they arent already registered
             //return 0 on register
             //return 1 if already registered
@@ -185,13 +185,13 @@ namespace server{
             return 1;
         }
 
-        public string FormatCommand(string commands){
+        private string FormatCommand(string commands){
             //takes in a command and formats it for the client
             return "{\"commands\": " + commands + "}";
             
         }
 
-        public void LogServer(string log){
+        private void LogServer(string log){
             //writes to a log file for the listener
             //create the file if it doesnt exist
             string path = $"{this.logPath}/log.txt";
