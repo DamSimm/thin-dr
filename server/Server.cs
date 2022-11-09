@@ -1,5 +1,10 @@
 ﻿using System;
 
+/*
+    Init Class that is called to start the Server program.
+    For actual functionality see the Listener class.
+*/
+
 namespace server
 {
     public class Server{
