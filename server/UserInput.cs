@@ -42,8 +42,9 @@ _________         _________ _               ______   _______
             // Add some rows
             menuOptions.AddRow("1","[red]Exit[/]");
             menuOptions.AddRow("2","[blue]List all Clients[/]");
-            menuOptions.AddRow("3","[green]Run a Console Command[/]");
-            menuOptions.AddRow("4","[purple]View Responses[/]");
+            menuOptions.AddRow("3", "[fuchsia]List Available Plugins[/]");
+            menuOptions.AddRow("4","[green]Run a Console Command[/]");
+            menuOptions.AddRow("5","[purple]View Responses[/]");
 
             // Render the tables to the console
             AnsiConsole.Write(menuOptions);
@@ -53,7 +54,7 @@ _________         _________ _               ______   _______
                     .Title("What would you like to do?")
                     .PageSize(10)
                     .AddChoices(new[] {
-                        "Exit", "List Clients", "Run a Console Command", "View Responses"
+                        "Exit", "List Clients", "List Available Plugins", "Run a Console Command", "View Responses"
                 }));
             return prompt;
         }
@@ -84,6 +85,14 @@ _________         _________ _               ______   _______
                         var comT = new Table();
                         ViewResponses();
                         break;
+                    case "List Available Plugins":
+                        var plugins = new Table();
+                        plugins.AddColumn("Installed Plugins");
+                        foreach(var plugin in ListPlugins()){
+                            plugins.AddRow(plugin);
+                        }
+                        AnsiConsole.Write(plugins);
+                        break;
                     default: 
                         Console.WriteLine("\nInvalid input; Please try again.");
                         break;
@@ -102,6 +111,18 @@ _________         _________ _               ______   _______
                 count++;
             }
             return agentArr;
+        }
+
+        public string[] ListPlugins(){
+            //shows all plugins in the plugin folder
+            var plugins = this.listener.pluginDict;
+            string[] pluginArr = new string[plugins.Count];
+            int count = 0;
+            foreach(var plugin in plugins){
+                pluginArr[count] = plugin.Key;
+                count++;
+            }
+            return pluginArr;
         }
 
         public int SetCommand(){

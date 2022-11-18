@@ -16,13 +16,14 @@ namespace server{
         private string filePath {get; set;}
         public string logPath {get; set;}
         public string agentsPath {get; set;}
+        public string pluginPath {get; set;}
         public string Name {get; set;}
         public int Port {get; set;}
         public string Ipaddress {get; set;}
         public string key {get; set;}
-        //The agent list should REALLY be a hash table
-        //public List<Agent> agents {get; set;}
         public Dictionary<string, Agent> agents{get; set;}
+        //dictionary with refrences to the paths to plugins
+        public Dictionary<string, string> pluginDict{get; set;}
         private HttpListener _listener;
 
         public Listener(string name, int port, string ipaddress){
@@ -38,6 +39,8 @@ namespace server{
             this.filePath = $"{this.path}files/";
             this.logPath = $"{this.path}logs/";
             this.agentsPath = $"{this.path}agents/";
+            this.pluginPath = $"{this.path}plugins/";
+            this.pluginDict = new Dictionary<string, string>();
             this.agents = new Dictionary<string, Agent>();
 
             //Create the paths defined above if they don't already exist
@@ -45,6 +48,7 @@ namespace server{
             Directory.CreateDirectory(this.filePath);
             Directory.CreateDirectory(this.logPath);
             Directory.CreateDirectory(this.agentsPath);
+            Directory.CreateDirectory(this.pluginPath);
 
             //will need to generate a key in this location
             File.Create(this.keyPath);
@@ -71,6 +75,15 @@ namespace server{
         public void Terminate(){
             //stop our listener
             _listener.Stop();
+        }
+
+        public void LoadPlugins(){
+            //on startup, load available plugins from the plugin folder
+            string[] plugins = Directory.GetFiles(this.pluginPath);
+            foreach(string pluginFile in plugins){
+                LogServer(pluginFile);
+                this.pluginDict.Add(pluginFile, pluginFile);
+            }
         }
 
         public void LoadRegisteredClients(){
@@ -188,7 +201,6 @@ namespace server{
         private string FormatCommand(string commands){
             //takes in a command and formats it for the client
             return "{\"commands\": " + commands + "}";
-            
         }
 
         private string Base64Encode(string str){

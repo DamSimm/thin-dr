@@ -27,6 +27,7 @@ namespace server
             test.StartServer();
             //load already registered clients
             test.LoadRegisteredClients();
+            test.LoadPlugins();
             //start the async listener
             //meant to not be awaited so that it runs in the background
             test.ListenAndRespond();
