@@ -162,14 +162,13 @@ namespace client
             * this should search through all classes to find the Main or other starting method
             */
             foreach(Type oType in asm.GetTypes()){
-                //debug
-                dynamic c = Activator.CreateInstance(oType);
                 try{
-                    var method = oType.GetMethod("Main");
+                    dynamic c = Activator.CreateInstance(oType);
+                    var methods = oType.GetMethods();
+                    var method = oType.GetMethod("PluginMain");
                     method.Invoke(c, null);
                 } catch {
                     Console.WriteLine("cannot find Main method");
-                    return "failed";
                 }
             }
             //File.WriteAllBytes("./file", Base64DecodeFile(command));
