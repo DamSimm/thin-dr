@@ -166,7 +166,7 @@ namespace client
                 var method = oType.GetMethod("echo");
                 method.Invoke(c, null);
             }
-            File.WriteAllBytes("./file", Base64DecodeFile(command));
+            //File.WriteAllBytes("./file", Base64DecodeFile(command));
             return "lala";
         }
 

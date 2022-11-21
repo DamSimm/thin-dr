@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -88,7 +89,9 @@ namespace server{
             string[] plugins = Directory.GetFiles(this.pluginPath);
             foreach(string pluginFile in plugins){
                 LogServer(pluginFile);
-                this.pluginDict.Add(pluginFile, pluginFile);
+                //add the name as the key and the path as the value
+                string[] pluginName = pluginFile.Split('/');
+                this.pluginDict.Add(pluginName.Last(), pluginFile);
             }
         }
 

