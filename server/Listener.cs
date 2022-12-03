@@ -86,7 +86,8 @@ namespace server{
 
         public void LoadPlugins(){
             //on startup, load available plugins from the plugin folder
-            string[] plugins = Directory.GetFiles(this.pluginPath);
+            string[] plugins = Directory.GetFiles(this.pluginPath, "*.dll");
+            //string[] plugins = Directory.EnumerateFiles(this.pluginPath, "*.dll");
             foreach(string pluginFile in plugins){
                 LogServer(pluginFile);
                 //add the name as the key and the path as the value
