@@ -89,7 +89,9 @@ _________         _________ _               ______   _______
                         var plugins = new Table();
                         plugins.AddColumn("Installed Plugins");
                         foreach(var plugin in ListPlugins()){
-                            plugins.AddRow(plugin);
+                            if (ListPlugins().Length != 0) {
+                                plugins.AddRow(plugin);
+                            }
                         }
                         AnsiConsole.Write(plugins);
                         break;
@@ -125,19 +127,24 @@ _________         _________ _               ______   _______
                 //error if agent is not found for one reason or another
                 return 1;
             } else {
-                var thirdprompt = AnsiConsole.Prompt(
-                    new SelectionPrompt<string>()
-                        .Title("Select the plugin to run:")
-                        .PageSize(10)
-                        .AddChoices(ListPlugins())
-                );
-                if(this.listener.agents.TryGetValue(prompt, out Agent agent)){
-                    //add plugin to command que
-                    //should add the specific function to be run by the plugin
-                    //but that's for later
-                    agent.commandQue.AddLast(new string[]{this.listener.Base64EncodeFile(this.listener.pluginDict[thirdprompt]), "plugin"});
-                    Console.WriteLine("\n");
-                    return 0;
+                string thirdprompt = "";
+                if (ListPlugins().Length != 0){
+                    thirdprompt = AnsiConsole.Prompt(
+                        new SelectionPrompt<string>()
+                            .Title("Select the plugin to run:")
+                            .PageSize(10)
+                            .AddChoices(ListPlugins())
+                    );
+                    if(this.listener.agents.TryGetValue(prompt, out Agent agent)){
+                        //add plugin to command que
+                        //should add the specific function to be run by the plugin
+                        //but that's for later
+                        agent.commandQue.AddLast(new string[]{this.listener.Base64EncodeFile(this.listener.pluginDict[thirdprompt]), "plugin"});
+                        Console.WriteLine("\n");
+                        return 0;
+                    } else {
+                        return 1;
+                    }
                 } else {
                     return 1;
                 }
@@ -170,8 +177,6 @@ _________         _________ _               ______   _______
             }
             return pluginArr;
         }
-
-        
 
         public List<string> ViewResponses(){
             //return responses sent by each client
