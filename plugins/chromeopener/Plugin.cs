@@ -14,6 +14,7 @@ class ChromeOpener{
             IDictionary<string, dynamic> ReturnArray = new Dictionary<string, dynamic>();
             ReturnArray.Add("ExitCode", 1);
             ReturnArray.Add("ExitMessage", "Chrome not found!");
+            return ReturnArray;
         }
         startInfo.UseShellExecute = false;
         startInfo.RedirectStandardOutput = true;
