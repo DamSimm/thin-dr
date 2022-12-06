@@ -6,7 +6,15 @@ class ChromeOpener{
 
     public static IDictionary<string, dynamic> PluginMain(){
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe";
+        if (File.Exists("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")) {
+            startInfo.FileName = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe";
+        } else if (File.Exists("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe")){
+            startInfo.FileName = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+        } else {
+            IDictionary<string, dynamic> ReturnArray = new Dictionary<string, dynamic>();
+            ReturnArray.Add("ExitCode", 1);
+            ReturnArray.Add("ExitMessage", "Chrome not found!");
+        }
         startInfo.UseShellExecute = false;
         startInfo.RedirectStandardOutput = true;
         startInfo.CreateNoWindow = false;

