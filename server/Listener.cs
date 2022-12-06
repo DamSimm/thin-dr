@@ -146,6 +146,26 @@ namespace server{
             //output.Close();
         }
 
+        private async Task<string> RegisterClient(JsonElement hostname, JsonElement root){
+            //register the agent
+            int registration = await RegisterAgent(hostname, root);
+            if (registration == 0){
+                return Base64EncodeString("{\"registered\":\"true\"}");
+            } 
+            return "{\"registered\":\"false\"}";
+        }
+
+        private string HandleCommand(JsonElement hostname, JsonElement root){
+            //respond to the client who wants their commandQue
+            LogServer($"command query from {hostname}");
+            if (this.agents.TryGetValue(hostname.GetString(), out Agent agent)){
+                var jsonCommandQue = JsonSerializer.Serialize(agent.commandQue);
+                agent.commandQue.Clear();
+                return Base64EncodeString(FormatCommand(jsonCommandQue));
+            }
+            return "{\"response\": \"Client not found!\"}";
+        }
+
         public async Task<string> RespondToClient(JsonDocument clientData){
             //will construct a response string to send to the client based on requests
             //if the request is looking for a new command
@@ -155,22 +175,10 @@ namespace server{
             //check if the property exists
 
             if (root.TryGetProperty("register", out JsonElement register)){
-                //register the agent
-                int registration = await RegisterAgent(hostname, root);
-                if (registration == 0){
-                    return Base64EncodeString("{\"registered\":\"true\"}");
-                } 
-                return "{\"registered\":\"false\"}";
+                return await RegisterClient(hostname, root);
 
             } else if (root.TryGetProperty("command", out JsonElement query)){
-                //respond to the client who wants their commandQue
-                LogServer($"command query from {hostname}");
-                if (this.agents.TryGetValue(hostname.GetString(), out Agent agent)){
-                    var jsonCommandQue = JsonSerializer.Serialize(agent.commandQue);
-                    agent.commandQue.Clear();
-                    return Base64EncodeString(FormatCommand(jsonCommandQue));
-                }
-                return "{\"response\": \"Client not found!\"}";
+                return HandleCommand(hostname, root);
 
             } else if (root.TryGetProperty("response", out JsonElement response)) {
                 //get and parse a client response
